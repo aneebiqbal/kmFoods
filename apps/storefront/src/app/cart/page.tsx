@@ -50,29 +50,29 @@ export default async function CartPage() {
               </h2>
               <dl className="mt-5 space-y-3 text-sm">
                 <div className="flex items-center justify-between">
-                  <dt className="text-earth-600">
+                  <dt className="text-ink-600">
                     {translate(locale, "cart.subtotal")}
                   </dt>
-                  <dd className="font-semibold text-earth-900">
+                  <dd className="font-semibold text-ink-900">
                     {money(cart.subtotal, locale)}
                   </dd>
                 </div>
                 <div className="flex items-center justify-between">
-                  <dt className="text-earth-600">
+                  <dt className="text-ink-600">
                     {translate(locale, "cart.delivery")}
                   </dt>
-                  <dd className="font-semibold text-earth-900">
+                  <dd className="font-semibold text-ink-900">
                     {money(0, locale)}
                   </dd>
                 </div>
-                <p className="text-xs leading-relaxed text-earth-500">
+                <p className="text-xs leading-relaxed text-ink-500">
                   {translate(locale, "cart.deliveryNote")}
                 </p>
-                <div className="flex items-center justify-between border-t border-earth-900/10 pt-3">
-                  <dt className="font-semibold text-earth-900">
+                <div className="flex items-center justify-between border-t border-ink-900/10 pt-3">
+                  <dt className="font-semibold text-ink-900">
                     {translate(locale, "cart.total")}
                   </dt>
-                  <dd className="text-lg font-semibold text-chili-700">
+                  <dd className="text-lg font-semibold text-paprika-700">
                     {money(cart.total, locale)}
                   </dd>
                 </div>
@@ -85,7 +85,7 @@ export default async function CartPage() {
               </Link>
               <Link
                 href="/shop"
-                className="mt-3 block text-center text-xs font-semibold text-earth-500 hover:text-chili-700"
+                className="mt-3 block text-center text-xs font-semibold text-ink-500 hover:text-paprika-700"
               >
                 {translate(locale, "cart.continue")}
               </Link>

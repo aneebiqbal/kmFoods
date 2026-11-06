@@ -22,7 +22,7 @@ export function OrderLookup() {
         <div className="flex-1">
           <label
             htmlFor="reference"
-            className="text-xs font-semibold uppercase tracking-[0.16em] text-earth-500"
+            className="text-xs font-semibold uppercase tracking-[0.16em] text-ink-500"
           >
             {t("order.reference")}
           </label>
@@ -31,7 +31,7 @@ export function OrderLookup() {
             value={reference}
             onChange={(event) => setReference(event.target.value)}
             placeholder="KM-000123"
-            className="mt-2 w-full rounded-2xl border border-earth-900/12 bg-cream-50 px-4 py-3 text-sm outline-none focus:border-chili-600"
+            className="mt-2 w-full rounded-2xl border border-ink-900/12 bg-bone-50 px-4 py-3 text-sm outline-none focus:border-paprika-600"
           />
         </div>
         <button type="submit" className="btn btn-primary px-6 py-3 text-sm">

@@ -19,7 +19,7 @@ export const LOCALE_LABELS: Record<Locale, string> = {
 const en = {
   "common.brand": "KM Foods",
   "common.tagline": "Har Ghar Ka Zaiqa",
-  "common.search": "Search products",
+  "common.search": "Search",
   "common.searchPlaceholder": "Search spices, dry fruits, seeds...",
   "common.menu": "Menu",
   "common.close": "Close",
@@ -38,6 +38,7 @@ const en = {
 
   "nav.home": "Home",
   "nav.shop": "Shop",
+  "nav.categories": "Categories",
   "nav.about": "About",
   "nav.contact": "Contact",
   "nav.cart": "Cart",
@@ -99,6 +100,34 @@ const en = {
   "product.quantity": "Quantity",
   "product.price": "Price",
   "product.addToCartFor": "Add {name} to cart",
+  "home.navigatorEyebrow": "Browse by ingredient",
+  "home.navigatorTitle": "The ingredient navigator",
+  "home.navigatorSubtitle":
+    "Start from what your dish needs. Every rail opens the real catalogue for that category.",
+  "home.selectionEyebrow": "This week on the shelf",
+  "home.selectionTitle": "The everyday selection",
+  "home.selectionSubtitle":
+    "The packs Lahore kitchens reach for most, in 100g and 1kg.",
+  "home.storyEyebrow": "From the shelf",
+  "home.storyTitle": "Two ingredients, two pack sizes",
+  "home.storySubtitle":
+    "Every product is sold in the pack sizes listed in our price list — no substitutions, no hidden weights.",
+  "home.checkoutEyebrow": "One conversation",
+  "home.stepsNote":
+    "Opening WhatsApp does not confirm your order. We confirm availability and the delivery charge first.",
+  "home.collectionsTitle": "Curated for the Lahore kitchen",
+  "home.collectionsSubtitle":
+    "Grouped by how you actually cook — everyday spices, seeds, dry fruits and the essentials that fill the gaps.",
+  "product.view": "View product",
+  "pantry.eyebrow": "Signature module",
+  "pantry.title": "The Pantry Shelf",
+  "pantry.subtitle":
+    "Walk the shelves. Pick a pack size, tap once, and it is in your cart.",
+  "pantry.hint": "Tap a pack size, then add",
+  "pantry.items": "items",
+  "pantry.viewAll": "Open the full catalogue",
+  "pantry.note":
+    "Prices are the current list prices in PKR. Delivery is confirmed on WhatsApp before anything is final.",
   "product.outOfStock": "Out of stock",
   "product.inStock": "In stock",
   "product.stockUnavailable": "Availability is unavailable right now.",
@@ -184,7 +213,7 @@ export const dictionaries: Record<Locale, Record<DictionaryKey, string>> = {
   ur: {
     "common.brand": "کے ایم فوڈز",
     "common.tagline": "ہر گھر کا ذائقہ",
-    "common.search": "مصنوعات تلاش کریں",
+    "common.search": "تلاش",
     "common.searchPlaceholder": "مصالحہ، خشک میوہ جات، بیج تلاش کریں...",
     "common.menu": "مینو",
     "common.close": "بند کریں",
@@ -203,6 +232,7 @@ export const dictionaries: Record<Locale, Record<DictionaryKey, string>> = {
 
     "nav.home": "ہوم",
     "nav.shop": "دکان",
+    "nav.categories": "اقسام",
     "nav.about": "ہمارے بارے میں",
     "nav.contact": "رابطہ",
     "nav.cart": "ٹوکری",
@@ -263,6 +293,34 @@ export const dictionaries: Record<Locale, Record<DictionaryKey, string>> = {
     "product.quantity": "مقدار",
     "product.price": "قیمت",
     "product.addToCartFor": "{name} ٹوکری میں ڈالیں",
+    "home.navigatorEyebrow": "اجزاء کے مطابق دیکھیں",
+    "home.navigatorTitle": "اجزاء نیویگیٹر",
+    "home.navigatorSubtitle":
+      "جو چیز آپ کے ڈش کو چاہیے اس سے شروع کریں۔ ہر ریل اس قسم کا اصل کیٹلاگ کھولتی ہے۔",
+    "home.selectionEyebrow": "اس ہفتے کی رف",
+    "home.selectionTitle": "روزمرہ کا انتخاب",
+    "home.selectionSubtitle":
+      "وہ پیک جنہیں لاہور کے باورچی خانے سب سے زیادہ استعمال کرتے ہیں — 100 گرام اور 1 کلو میں۔",
+    "home.storyEyebrow": "رف سے",
+    "home.storyTitle": "دو اجزاء، دو پیک سائز",
+    "home.storySubtitle":
+      "ہر مصنوعہ ہماری قیمت کی لسٹ میں درج پیک سائز میں بیچی جاتی ہے — کوئی تبدیلی نہیں، کوئی پوشیدہ وزن نہیں۔",
+    "home.checkoutEyebrow": "ایک گفتگو",
+    "home.stepsNote":
+      "واٹس ایپ کھولنا آرڈر کی تصدیق نہیں ہے۔ ہم پہلے دستیابی اور ڈیلیوری چارجز کی تصدیق کرتے ہیں۔",
+    "home.collectionsTitle": "لاہور کے باورچی خانے کے لیے",
+    "home.collectionsSubtitle":
+      "جس طرح آپ کھانا پکاتے ہیں اسی کے مطابق گروہ — روزمرہ مصالحے، بیج، خشک میوہ جات اور ضروری چیزیں۔",
+    "product.view": "مصنوعہ دیکھیں",
+    "pantry.eyebrow": "نمایاں ماڈیول",
+    "pantry.title": "پینٹری شیلف",
+    "pantry.subtitle":
+      "رفلیں گہومتے ہیں۔ پیک سائز چنیں، ایک بار ٹیپ کریں، اور یہ آپ کی ٹوکری میں۔",
+    "pantry.hint": "پہلے پیک سائز چنیں، پھر شامل کریں",
+    "pantry.items": "آئٹمز",
+    "pantry.viewAll": "مکمل کیٹلاگ کھولیں",
+    "pantry.note":
+      "قیمتیں PKR میں موجودہ لسٹ کی قیمتیں ہیں۔ ڈیلیوری کی تصدیق واٹس ایپ پر ہوتی ہے۔",
     "product.outOfStock": "دستیاب نہیں",
     "product.inStock": "دستیاب ہے",
     "product.stockUnavailable": "فی الحال دستیابی کی معلومات نہیں ہیں۔",

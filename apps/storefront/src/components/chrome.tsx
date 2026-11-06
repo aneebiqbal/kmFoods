@@ -1,26 +1,22 @@
 "use client";
 
 import Link from "next/link";
-import { BrandLogo } from "@/components/brand-logo";
 import { usePathname } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useLanguage } from "@/i18n/language-context";
 import { LOCALES, LOCALE_LABELS, type Locale } from "@kmfoods/shared";
+import { BrandLogo } from "@/components/brand-logo";
 import { CartDrawer } from "@/components/cart-drawer";
+import { SearchOverlay } from "@/components/search-overlay";
 
-const NAV_ITEMS: Array<{ key: "nav.home" | "nav.shop" | "nav.about" | "nav.contact"; href: string }> = [
-  { key: "nav.home", href: "/" },
-  { key: "nav.shop", href: "/shop" },
-  { key: "nav.about", href: "/about" },
-  { key: "nav.contact", href: "/contact" },
-];
+type Category = { id: string; name: string; handle: string };
 
 export function LanguageSwitcher() {
   const { locale, setLocale } = useLanguage();
 
   return (
     <div
-      className="flex items-center gap-0.5 rounded-full border border-earth-900/10 bg-cream-50/60 p-0.5"
+      className="flex items-center gap-0.5 rounded-full border border-ink-900/10 bg-bone-50/70 p-0.5"
       role="group"
       aria-label="Language"
     >
@@ -30,10 +26,10 @@ export function LanguageSwitcher() {
           type="button"
           onClick={() => setLocale(code)}
           aria-pressed={locale === code}
-          className={`rounded-full px-2.5 py-1 text-xs font-semibold transition-colors duration-200 ${
+          className={`rounded-full px-2.5 py-1 text-[0.6875rem] font-semibold transition-colors duration-200 ${
             locale === code
-              ? "bg-chili-600 text-cream-50"
-              : "text-earth-600 hover:bg-cream-100"
+              ? "bg-aubergine-700 text-bone-50"
+              : "text-ink-500 hover:bg-bone-200"
           }`}
         >
           {LOCALE_LABELS[code]}
@@ -43,176 +39,269 @@ export function LanguageSwitcher() {
   );
 }
 
-export function Header() {
+export function Header({ categories }: { categories: Category[] }) {
   const { t } = useLanguage();
   const pathname = usePathname();
-  const [open, setOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [searchOpen, setSearchOpen] = useState(false);
+  const [categoriesOpen, setCategoriesOpen] = useState(false);
+
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 24);
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
+  useEffect(() => {
+    setMenuOpen(false);
+    setCategoriesOpen(false);
+  }, [pathname]);
+
+  useEffect(() => {
+    function onKey(event: KeyboardEvent) {
+      if (event.key === "Escape") {
+        setSearchOpen(false);
+        setMenuOpen(false);
+        setCategoriesOpen(false);
+      }
+    }
+    document.addEventListener("keydown", onKey);
+    return () => document.removeEventListener("keydown", onKey);
+  }, []);
+
+  const nav = [
+    { key: "nav.shop" as const, href: "/shop" },
+    { key: "nav.about" as const, href: "/about" },
+    { key: "nav.contact" as const, href: "/contact" },
+  ];
 
   return (
-    <header className="sticky top-0 z-40 border-b border-earth-900/5 bg-cream-50/80 backdrop-blur-md">
-      <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-3 sm:px-6 lg:px-8">
-        <Link
-          href="/"
-          className="flex flex-col gap-1 leading-none"
-          aria-label={`${t("common.brand")} — ${t("common.tagline")}`}
-        >
-          <BrandLogo alt={t("common.brand")} priority />
-          <span className="hidden text-[10px] uppercase tracking-[0.22em] text-chili-700 sm:block">
-            {t("common.tagline")}
-          </span>
-        </Link>
-
-        <nav className="hidden items-center gap-7 md:flex" aria-label="Main">
-          {NAV_ITEMS.map((item) => {
-            const active = pathname === item.href;
-            return (
-              <Link
-                key={item.href}
-                href={item.href}
-                className={`link-underline text-sm font-medium ${
-                  active ? "text-chili-700" : "text-earth-600 hover:text-earth-900"
-                }`}
-              >
-                {t(item.key)}
-              </Link>
-            );
-          })}
-        </nav>
-
-        <div className="flex items-center gap-2">
-          <LanguageSwitcher />
-          <CartDrawer />
-          <button
-            type="button"
-            className="btn btn-ghost px-3 py-2 text-sm md:hidden"
-            onClick={() => setOpen((value) => !value)}
-            aria-expanded={open}
-            aria-label={t("common.menu")}
-          >
-            {t("common.menu")}
-          </button>
-        </div>
-      </div>
-
-      {open && (
-        <nav
-          className="border-t border-earth-900/5 bg-cream-50 px-4 py-3 md:hidden"
-          aria-label="Mobile"
-        >
-          <ul className="flex flex-col gap-3">
-            {NAV_ITEMS.map((item) => (
-              <li key={item.href}>
+    <>
+      <header
+        className={`sticky top-0 z-40 transition-[background-color,box-shadow,backdrop-filter] duration-500 ${
+          scrolled
+            ? "border-b border-ink-900/8 bg-bone-100/85 shadow-[0_12px_40px_-24px_rgb(28_19_12/0.5)] backdrop-blur-xl"
+            : "border-b border-transparent bg-bone-100/40 backdrop-blur-sm"
+        }`}
+      >
+        {/* Desktop: three zones — discovery | brand | actions */}
+        <div className="mx-auto hidden max-w-[90rem] grid-cols-[1fr_auto_1fr] items-center gap-8 px-8 py-4 lg:grid">
+          <nav className="flex items-center gap-7" aria-label="Main">
+            {nav.map((item) => {
+              const active = pathname === item.href;
+              return (
                 <Link
+                  key={item.href}
                   href={item.href}
-                  onClick={() => setOpen(false)}
-                  className="block text-sm font-medium text-earth-700"
+                  className={`link-underline text-[0.8125rem] font-medium tracking-[0.02em] ${
+                    active ? "text-paprika-600" : "text-ink-600 hover:text-ink-900"
+                  }`}
                 >
                   {t(item.key)}
                 </Link>
-              </li>
+              );
+            })}
+
+            <div className="relative">
+              <button
+                type="button"
+                onClick={() => setCategoriesOpen((value) => !value)}
+                aria-expanded={categoriesOpen}
+                className={`flex items-center gap-1.5 text-[0.8125rem] font-medium tracking-[0.02em] transition-colors ${
+                  categoriesOpen ? "text-paprika-600" : "text-ink-600 hover:text-ink-900"
+                }`}
+              >
+                {t("nav.categories")}
+                <svg
+                  width="12"
+                  height="12"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  aria-hidden="true"
+                  className={`transition-transform duration-300 ${categoriesOpen ? "rotate-180" : ""}`}
+                >
+                  <path d="m6 9 6 6 6-6" />
+                </svg>
+              </button>
+
+              {categoriesOpen && (
+                <div className="absolute start-0 top-full z-50 w-64 pt-3">
+                  <div className="stage">
+                    <div className="core p-2">
+                      <ul className="divide-y divide-ink-900/5">
+                        {categories.map((category) => (
+                          <li key={category.id}>
+                            <Link
+                              href={`/shop?category=${category.handle}`}
+                              className="flex items-center justify-between gap-3 rounded-xl px-3 py-2.5 text-sm text-ink-700 transition-colors hover:bg-bone-200 hover:text-ink-900"
+                            >
+                              {category.name}
+                              <span className="text-[0.625rem] uppercase tracking-[0.18em] text-ink-500">
+                                {category.handle}
+                              </span>
+                            </Link>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+          </nav>
+
+          <Link
+            href="/"
+            className="flex flex-col items-center gap-1"
+            aria-label={`${t("common.brand")} — ${t("common.tagline")}`}
+          >
+            <BrandLogo alt={t("common.brand")} className="h-10 w-auto" />
+            <span className="text-[0.5625rem] uppercase tracking-[0.3em] text-paprika-600">
+              {t("common.tagline")}
+            </span>
+          </Link>
+
+          <div className="flex items-center justify-end gap-2">
+            <button
+              type="button"
+              onClick={() => setSearchOpen(true)}
+              className="btn btn-ghost px-3.5 py-2 text-[0.8125rem]"
+              aria-label={t("common.search")}
+            >
+              <svg
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.7"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                aria-hidden="true"
+              >
+                <circle cx="11" cy="11" r="7" />
+                <path d="m20 20-3.5-3.5" />
+              </svg>
+              <span className="hidden xl:inline">{t("common.search")}</span>
+            </button>
+            <LanguageSwitcher />
+            <CartDrawer />
+          </div>
+        </div>
+
+        {/* Mobile: brand left, actions right */}
+        <div className="mx-auto flex max-w-[90rem] items-center justify-between gap-2 px-4 py-3 lg:hidden">
+          <Link
+            href="/"
+            className="flex items-center gap-2"
+            aria-label={`${t("common.brand")} — ${t("common.tagline")}`}
+          >
+            <BrandLogo alt={t("common.brand")} className="h-9 w-auto" />
+          </Link>
+
+          <div className="flex items-center gap-1.5">
+            <button
+              type="button"
+              onClick={() => setSearchOpen(true)}
+              className="flex h-10 w-10 items-center justify-center rounded-full border border-ink-900/10 bg-bone-50/70 text-ink-700"
+              aria-label={t("common.search")}
+            >
+              <svg
+                width="17"
+                height="17"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.7"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                aria-hidden="true"
+              >
+                <circle cx="11" cy="11" r="7" />
+                <path d="m20 20-3.5-3.5" />
+              </svg>
+            </button>
+            <CartDrawer />
+            <button
+              type="button"
+              onClick={() => setMenuOpen((value) => !value)}
+              aria-expanded={menuOpen}
+              aria-label={t("common.menu")}
+              className="flex h-10 w-10 items-center justify-center rounded-full border border-ink-900/10 bg-bone-50/70 text-ink-700"
+            >
+              <svg
+                width="18"
+                height="18"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.7"
+                strokeLinecap="round"
+                aria-hidden="true"
+              >
+                {menuOpen ? (
+                  <path d="M6 6l12 12M18 6L6 18" />
+                ) : (
+                  <>
+                    <path d="M4 8h16" />
+                    <path d="M4 16h10" />
+                  </>
+                )}
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        {/* Mobile menu */}
+        <div
+          className={`overflow-hidden border-t border-ink-900/8 bg-bone-100 transition-[max-height,opacity] duration-500 lg:hidden ${
+            menuOpen ? "max-h-[28rem] opacity-100" : "max-h-0 opacity-0"
+          }`}
+        >
+          <nav className="mx-auto max-w-[90rem] space-y-1 px-4 py-4" aria-label="Mobile">
+            {nav.map((item) => (
+              <Link
+                key={item.href}
+                href={item.href}
+                onClick={() => setMenuOpen(false)}
+                className="block rounded-xl px-3 py-2.5 text-base font-medium text-ink-700 transition-colors hover:bg-bone-200"
+              >
+                {t(item.key)}
+              </Link>
             ))}
-          </ul>
-        </nav>
-      )}
-    </header>
-  );
-}
-
-export function Footer() {
-  const { t } = useLanguage();
-
-  return (
-    <footer className="grain relative mt-24 overflow-hidden bg-leaf-700 py-16 text-cream-100">
-      <div className="mx-auto grid max-w-7xl gap-10 px-4 sm:grid-cols-2 sm:px-6 lg:grid-cols-4 lg:px-8">
-        <div>
-          <BrandLogo
-            alt={t("common.brand")}
-            className="h-12 w-auto rounded-lg object-contain"
-          />
-          <p className="mt-2 text-[10px] uppercase tracking-[0.22em] text-gold-400">
-            {t("common.tagline")}
-          </p>
-          <p className="mt-4 text-sm leading-relaxed text-cream-100/80">
-            {t("footer.tagline")}
-          </p>
+            <p className="px-3 pb-1 pt-3 text-[0.625rem] uppercase tracking-[0.22em] text-ink-500">
+              {t("nav.categories")}
+            </p>
+            <div className="grid grid-cols-2 gap-1.5 pb-2">
+              {categories.map((category) => (
+                <Link
+                  key={category.id}
+                  href={`/shop?category=${category.handle}`}
+                  onClick={() => setMenuOpen(false)}
+                  className="rounded-xl border border-ink-900/8 bg-bone-50 px-3 py-2.5 text-sm text-ink-700 transition-colors hover:border-ink-900/20"
+                >
+                  {category.name}
+                </Link>
+              ))}
+            </div>
+            <div className="flex items-center justify-between px-3 pt-2">
+              <LanguageSwitcher />
+            </div>
+          </nav>
         </div>
+      </header>
 
-        <div>
-          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-gold-400">
-            {t("footer.shop")}
-          </p>
-          <ul className="mt-4 space-y-2 text-sm">
-            <li>
-              <Link href="/shop" className="hover:text-cream-50">
-                {t("nav.shop")}
-              </Link>
-            </li>
-            <li>
-              <Link href="/cart" className="hover:text-cream-50">
-                {t("nav.cart")}
-              </Link>
-            </li>
-            <li>
-              <Link href="/order" className="hover:text-cream-50">
-                {t("order.title")}
-              </Link>
-            </li>
-          </ul>
-        </div>
-
-        <div>
-          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-gold-400">
-            {t("footer.company")}
-          </p>
-          <ul className="mt-4 space-y-2 text-sm">
-            <li>
-              <Link href="/about" className="hover:text-cream-50">
-                {t("nav.about")}
-              </Link>
-            </li>
-            <li>
-              <Link href="/contact" className="hover:text-cream-50">
-                {t("nav.contact")}
-              </Link>
-            </li>
-          </ul>
-        </div>
-
-        <div>
-          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-gold-400">
-            {t("footer.policies")}
-          </p>
-          <ul className="mt-4 space-y-2 text-sm">
-            <li>
-              <Link href="/delivery-policy" className="hover:text-cream-50">
-                {t("nav.delivery")}
-              </Link>
-            </li>
-            <li>
-              <Link href="/return-policy" className="hover:text-cream-50">
-                {t("nav.returns")}
-              </Link>
-            </li>
-            <li>
-              <Link href="/privacy-policy" className="hover:text-cream-50">
-                {t("nav.privacy")}
-              </Link>
-            </li>
-            <li>
-              <Link href="/terms" className="hover:text-cream-50">
-                {t("nav.terms")}
-              </Link>
-            </li>
-          </ul>
-        </div>
-      </div>
-
-      <div className="mx-auto mt-12 max-w-7xl border-t border-cream-50/10 px-4 pt-6 sm:px-6 lg:px-8">
-        <p className="text-xs text-cream-100/60">
-          {t("footer.rights")} © {new Date().getFullYear()} {t("common.brand")}.
-        </p>
-        <p className="mt-2 text-xs text-cream-100/50">{t("footer.draftNotice")}</p>
-      </div>
-    </footer>
+      <SearchOverlay
+        open={searchOpen}
+        onClose={() => setSearchOpen(false)}
+        categories={categories}
+      />
+    </>
   );
 }

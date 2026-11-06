@@ -80,6 +80,9 @@ full walkthrough and troubleshooting.
 Deploying to Vercel with Cloudflare DNS? See
 [docs/deployment/vercel-cloudflare.md](docs/deployment/vercel-cloudflare.md).
 
+Design system and creative direction:
+[docs/design/living-spice-atelier.md](docs/design/living-spice-atelier.md).
+
 ## Scripts
 
 | Command | Purpose |

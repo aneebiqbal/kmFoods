@@ -20,13 +20,18 @@ export function assertMedusaConfigured(): void {
   if (process.env.NODE_ENV === "production" && LOCAL_HOST.test(baseUrl)) {
     // Loud, but not fatal: `next start` against a local backend is a legitimate
     // way to test a production build. A real deployment uses a public URL and
-    // never sees this.
-    console.warn(
-      `[medusa] NEXT_PUBLIC_MEDUSA_BACKEND_URL is "${baseUrl}". ` +
-        "A deployed storefront must use the public Medusa URL, not a local backend."
-    );
+    // never sees this. Warn once per process.
+    if (!localHostWarned) {
+      localHostWarned = true;
+      console.warn(
+        `[medusa] NEXT_PUBLIC_MEDUSA_BACKEND_URL is "${baseUrl}". ` +
+          "A deployed storefront must use the public Medusa URL, not a local backend."
+      );
+    }
   }
 }
+
+let localHostWarned = false;
 
 export const medusaBaseUrl = baseUrl;
 export const medusaPublishableKey = publishableKey;

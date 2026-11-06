@@ -43,7 +43,7 @@ export default async function OrderStatusPage({
         <div className="mt-10 max-w-2xl">
           <div className="shell">
             <div className="core p-8 text-center">
-              <p className="text-earth-600">
+              <p className="text-ink-600">
                 {translate(locale, "order.notFound")}
               </p>
               <Link
@@ -61,22 +61,22 @@ export default async function OrderStatusPage({
             <div className="core p-6">
               <dl className="grid gap-4 text-sm sm:grid-cols-2">
                 <div>
-                  <dt className="text-xs uppercase tracking-[0.16em] text-earth-500">
+                  <dt className="text-xs uppercase tracking-[0.16em] text-ink-500">
                     {translate(locale, "order.reference")}
                   </dt>
                   <dd
                     data-testid="order-reference"
-                    className="mt-1 font-semibold tracking-[0.14em] text-chili-700"
+                    className="mt-1 font-semibold tracking-[0.14em] text-paprika-700"
                   >
                     {order.reference}
                   </dd>
                 </div>
                 <div>
-                  <dt className="text-xs uppercase tracking-[0.16em] text-earth-500">
+                  <dt className="text-xs uppercase tracking-[0.16em] text-ink-500">
                     {translate(locale, "order.status")}
                   </dt>
                   <dd className="mt-1">
-                    <span className="rounded-full bg-gold-400/20 px-3 py-1 text-xs font-semibold text-earth-800">
+                    <span className="rounded-full bg-saffron-400/20 px-3 py-1 text-xs font-semibold text-ink-900">
                       {order.status === "confirmed"
                         ? translate(locale, "order.status")
                         : translate(locale, "order.pending")}
@@ -85,17 +85,17 @@ export default async function OrderStatusPage({
                 </div>
               </dl>
 
-              <h2 className="mt-8 text-sm font-semibold uppercase tracking-[0.16em] text-earth-500">
+              <h2 className="mt-8 text-sm font-semibold uppercase tracking-[0.16em] text-ink-500">
                 {translate(locale, "order.items")}
               </h2>
-              <ul className="mt-3 divide-y divide-earth-900/8 text-sm">
+              <ul className="mt-3 divide-y divide-ink-900/8 text-sm">
                 {order.items.map((item, index) => (
                   <li key={index} className="flex items-center justify-between py-3">
                     <span>
                       {item.title}{" "}
-                      <span className="text-earth-500">× {item.quantity}</span>
+                      <span className="text-ink-500">× {item.quantity}</span>
                     </span>
-                    <span className="font-semibold text-earth-900">
+                    <span className="font-semibold text-ink-900">
                       {money(item.unit_price * item.quantity, locale)}
                     </span>
                   </li>
@@ -106,13 +106,13 @@ export default async function OrderStatusPage({
 
           <aside className="shell h-fit">
             <div className="core p-6">
-              <h2 className="text-sm font-semibold uppercase tracking-[0.16em] text-earth-500">
+              <h2 className="text-sm font-semibold uppercase tracking-[0.16em] text-ink-500">
                 {translate(locale, "order.subtotal")}
               </h2>
-              <p className="mt-2 text-2xl font-semibold text-chili-700">
+              <p className="mt-2 text-2xl font-semibold text-paprika-700">
                 {money(order.total, locale)}
               </p>
-              <p className="mt-3 text-xs leading-relaxed text-earth-500">
+              <p className="mt-3 text-xs leading-relaxed text-ink-500">
                 {translate(locale, "order.pendingBody")}
               </p>
               <Link

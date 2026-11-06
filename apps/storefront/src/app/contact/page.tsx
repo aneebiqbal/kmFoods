@@ -16,7 +16,7 @@ export default async function ContactPage() {
         <h1 className="mt-4 text-4xl font-semibold sm:text-5xl">
           {translate(locale, "contact.title")}
         </h1>
-        <p className="mt-5 text-lg leading-relaxed text-earth-600">
+        <p className="mt-5 text-lg leading-relaxed text-ink-600">
           {translate(locale, "contact.subtitle")}
         </p>
       </div>
@@ -24,7 +24,7 @@ export default async function ContactPage() {
       <div className="mt-12 grid max-w-4xl gap-6 lg:grid-cols-2">
         <div className="shell">
           <div className="core flex flex-col gap-4 p-7">
-            <div className="flex h-11 w-11 items-center justify-center rounded-full bg-leaf-600/10 text-leaf-600">
+            <div className="flex h-11 w-11 items-center justify-center rounded-full bg-olive-600/10 text-olive-600">
               <svg
                 width="20"
                 height="20"
@@ -42,7 +42,7 @@ export default async function ContactPage() {
             <h2 className="text-xl font-semibold">
               {translate(locale, "contact.whatsapp")}
             </h2>
-            <p className="text-sm leading-relaxed text-earth-600">
+            <p className="text-sm leading-relaxed text-ink-600">
               {locale === "ur"
                 ? "واٹس ایپ ہماری ترجیحی رابطہ کا ذریعہ ہے۔ اپنا آرڈر یا سوال اسی ایپ پر بھیجیں۔"
                 : "WhatsApp is our preferred contact channel. Send your order or question there and our team will respond."}
@@ -55,7 +55,7 @@ export default async function ContactPage() {
 
         <div className="shell">
           <div className="core flex flex-col gap-4 p-7">
-            <div className="flex h-11 w-11 items-center justify-center rounded-full bg-chili-600/10 text-chili-700">
+            <div className="flex h-11 w-11 items-center justify-center rounded-full bg-paprika-600/10 text-paprika-700">
               <svg
                 width="20"
                 height="20"
@@ -74,12 +74,12 @@ export default async function ContactPage() {
             <h2 className="text-xl font-semibold">
               {locale === "ur" ? "دیگر رابطے" : "Other channels"}
             </h2>
-            <p className="text-sm leading-relaxed text-earth-600">
+            <p className="text-sm leading-relaxed text-ink-600">
               {locale === "ur"
                 ? "ای میل اور فون نمبر جلد ہی یہاں شائع کیے جائیں گے۔ اس وقت ہماری ٹیم واٹس ایپ پر جواب دیتی ہے۔"
                 : "Email and phone details will be published here shortly. Until then our team answers on WhatsApp."}
             </p>
-            <p className="mt-2 rounded-2xl border border-gold-400/40 bg-gold-400/10 px-4 py-3 text-xs text-earth-700">
+            <p className="mt-2 rounded-2xl border border-saffron-400/40 bg-saffron-400/10 px-4 py-3 text-xs text-ink-700">
               {locale === "ur"
                 ? "رابطہ کا بلاک ایک .placeholder نہیں ہے — جو معلومات دکھائی گئی ہیں وہ تصدیق شدہ ہیں۔"
                 : "This contact block is not a placeholder form — only confirmed details are shown."}

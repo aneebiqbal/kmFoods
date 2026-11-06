@@ -13,7 +13,7 @@ export default async function NotFound() {
         alt={translate(locale, "common.brand")}
         className="mx-auto h-11 w-auto object-contain"
       />
-      <p className="mt-8 font-display text-7xl font-semibold text-chili-700">404</p>
+      <p className="mt-8 font-display text-7xl font-semibold text-paprika-700">404</p>
       <h1 className="mt-4 text-2xl font-semibold">
         {locale === "ur" ? "صفحہ نہیں ملا" : "Page not found"}
       </h1>

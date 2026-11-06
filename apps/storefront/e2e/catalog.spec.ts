@@ -6,7 +6,7 @@ test.describe("catalogue browsing", () => {
     await expect(page.getByRole("heading", { level: 1 })).toContainText(
       "Har Ghar Ka Zaiqa"
     );
-    await expect(page.getByText("Rs 85")).toBeVisible();
+    await expect(page.getByText("Rs 85").first()).toBeVisible();
   });
 
   test("shop lists database-backed products", async ({ page }) => {
@@ -27,8 +27,8 @@ test.describe("catalogue browsing", () => {
 
   test("search finds a product by name", async ({ page }) => {
     await page.goto("/shop", { waitUntil: "networkidle" });
-    await page.getByLabel("Search products").fill("turmeric");
-    await page.getByRole("button", { name: "Search products" }).click();
+    await page.locator('input[name="q"]').fill("turmeric");
+    await page.locator("#main-content").getByRole("button", { name: "Search" }).click();
     await expect(page.getByTestId("result-count")).toContainText("1 products");
     await expect(page.getByText("Turmeric").first()).toBeVisible();
   });

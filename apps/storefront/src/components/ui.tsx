@@ -91,7 +91,7 @@ export function SectionHeading({
         {title}
       </h2>
       {subtitle && (
-        <p className="mt-4 text-base leading-relaxed text-earth-600 sm:text-lg">
+        <p className="mt-4 text-base leading-relaxed text-ink-600 sm:text-lg">
           {subtitle}
         </p>
       )}
@@ -103,12 +103,12 @@ export function ProductSkeleton() {
   return (
     <div className="shell" aria-hidden="true">
       <div className="core overflow-hidden">
-        <div className="animate-pulse bg-cream-200 aspect-[4/3]" />
+        <div className="animate-pulse bg-bone-200 aspect-[4/3]" />
         <div className="space-y-3 p-5">
-          <div className="h-4 w-20 animate-pulse rounded-full bg-cream-200" />
-          <div className="h-4 w-3/4 animate-pulse rounded bg-cream-200" />
-          <div className="h-3 w-1/2 animate-pulse rounded bg-cream-200" />
-          <div className="h-5 w-16 animate-pulse rounded bg-cream-200" />
+          <div className="h-4 w-20 animate-pulse rounded-full bg-bone-200" />
+          <div className="h-4 w-3/4 animate-pulse rounded bg-bone-200" />
+          <div className="h-3 w-1/2 animate-pulse rounded bg-bone-200" />
+          <div className="h-5 w-16 animate-pulse rounded bg-bone-200" />
         </div>
       </div>
     </div>
@@ -127,7 +127,7 @@ export function EmptyState({
   return (
     <div className="shell">
       <div className="core flex flex-col items-center gap-4 px-6 py-16 text-center">
-        <div className="flex h-12 w-12 items-center justify-center rounded-full bg-chili-600/10 text-chili-700">
+        <div className="flex h-12 w-12 items-center justify-center rounded-full bg-paprika-600/10 text-paprika-700">
           <svg
             width="22"
             height="22"
@@ -145,7 +145,7 @@ export function EmptyState({
         </div>
         <h3 className="text-xl font-semibold">{title}</h3>
         {body && (
-          <p className="max-w-md text-sm leading-relaxed text-earth-600">{body}</p>
+          <p className="max-w-md text-sm leading-relaxed text-ink-600">{body}</p>
         )}
         {action}
       </div>

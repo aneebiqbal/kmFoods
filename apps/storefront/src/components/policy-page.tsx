@@ -32,10 +32,10 @@ export function PolicyPage({
           {title}
         </h1>
         {intro && (
-          <p className="mt-5 text-lg leading-relaxed text-earth-600">{intro}</p>
+          <p className="mt-5 text-lg leading-relaxed text-ink-600">{intro}</p>
         )}
         {draft && (
-          <p className="mt-6 rounded-2xl border border-gold-400/40 bg-gold-400/10 px-4 py-3 text-sm text-earth-700">
+          <p className="mt-6 rounded-2xl border border-saffron-400/40 bg-saffron-400/10 px-4 py-3 text-sm text-ink-700">
             Draft content — pending review and approval by the KM Foods owner.
           </p>
         )}
@@ -45,7 +45,7 @@ export function PolicyPage({
         {sections.map((section) => (
           <section key={section.heading}>
             <h2 className="text-xl font-semibold">{section.heading}</h2>
-            <p className="mt-3 leading-relaxed text-earth-600">{section.body}</p>
+            <p className="mt-3 leading-relaxed text-ink-600">{section.body}</p>
           </section>
         ))}
       </div>

@@ -36,6 +36,17 @@ There are 42 tests across four suites:
 The catalogue and checkout suites run on desktop Chromium and a phone-sized
 viewport. Mobile-only tests skip themselves on desktop.
 
+### Coverage added in Phase 4
+
+| Test | Covers |
+| --- | --- |
+| `src/app/sitemap.test.ts` | Sitemap resilience: static routes always present, product URLs when the backend is reachable, graceful degradation when it is not |
+| `src/lib/cart-map.test.ts` | Medusa cart → storefront cart mapping, including missing relations |
+| `e2e/mobile.spec.ts` | Sticky mobile purchase bar, cart drawer, stock display |
+| `e2e/admin-ui.spec.ts` | Delivery-area and handoff admin screens in a real browser |
+
+Not covered: the header search overlay and the Pantry Shelf quick-add.
+
 ### `catalog.spec.ts`
 
 1. Homepage loads with real products and prices.

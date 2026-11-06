@@ -14,10 +14,10 @@ export function PriceTag({
   className?: string;
 }) {
   if (price === null) {
-    return <span className={`text-sm text-earth-500 ${className}`}>—</span>;
+    return <span className={`text-sm text-ink-500 ${className}`}>—</span>;
   }
   return (
-    <span className={`font-semibold text-earth-900 ${className}`}>
+    <span className={`font-semibold text-ink-900 ${className}`}>
       {money(price, locale)}
     </span>
   );
@@ -41,7 +41,7 @@ export function ProductMedia({
   if (product.thumbnail) {
     return (
       <div
-        className={`relative overflow-hidden bg-cream-100 ${className}`}
+        className={`relative overflow-hidden bg-bone-100 ${className}`}
         role="img"
         aria-label={product.title}
       >
@@ -112,10 +112,10 @@ export function ProductCard({
             />
           </div>
 
-          <h3 className="mt-3 text-base font-semibold leading-snug text-earth-900 sm:text-lg">
+          <h3 className="mt-3 text-base font-semibold leading-snug text-ink-900 sm:text-lg">
             {title}
           </h3>
-          <p className="mt-1 text-xs text-earth-500">
+          <p className="mt-1 text-xs text-ink-500">
             {product.variants.length > 0
               ? product.variants.map((variant) => variant.title).join(" / ")
               : "Pack size to be confirmed"}

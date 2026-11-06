@@ -27,11 +27,11 @@ function QuantityForm({ line }: { line: CartLine }) {
     <form onSubmit={handleSubmit} className="flex items-center gap-2">
       <input type="hidden" name="lineId" value={line.id} />
       <input type="hidden" name="quantity" value={quantity} />
-      <div className="inline-flex items-center rounded-full border border-earth-900/12">
+      <div className="inline-flex items-center rounded-full border border-ink-900/12">
         <button
           type="button"
           onClick={() => setQuantity((value) => Math.max(0, value - 1))}
-          className="px-3 py-1.5 text-earth-700"
+          className="px-3 py-1.5 text-ink-700"
           aria-label="Decrease quantity"
         >
           −
@@ -42,7 +42,7 @@ function QuantityForm({ line }: { line: CartLine }) {
         <button
           type="button"
           onClick={() => setQuantity((value) => Math.min(999, value + 1))}
-          className="px-3 py-1.5 text-earth-700"
+          className="px-3 py-1.5 text-ink-700"
           aria-label="Increase quantity"
         >
           +
@@ -51,12 +51,12 @@ function QuantityForm({ line }: { line: CartLine }) {
       <button
         type="submit"
         disabled={pending || quantity === line.quantity}
-        className="text-xs font-semibold text-chili-700 disabled:opacity-40"
+        className="text-xs font-semibold text-paprika-700 disabled:opacity-40"
       >
         {t("cart.update")}
       </button>
       {state.status === "error" && (
-        <span className="text-xs text-chili-700">{state.message}</span>
+        <span className="text-xs text-paprika-700">{state.message}</span>
       )}
     </form>
   );
@@ -81,12 +81,12 @@ function RemoveForm({ line }: { line: CartLine }) {
       <button
         type="submit"
         disabled={pending}
-        className="text-xs font-semibold text-earth-500 underline-offset-2 hover:text-chili-700 hover:underline"
+        className="text-xs font-semibold text-ink-500 underline-offset-2 hover:text-paprika-700 hover:underline"
       >
         {t("cart.remove")}
       </button>
       {state.status === "error" && (
-        <span className="ml-2 text-xs text-chili-700">{state.message}</span>
+        <span className="ml-2 text-xs text-paprika-700">{state.message}</span>
       )}
     </form>
   );
@@ -112,14 +112,14 @@ export function CartLineItems({ lines }: { lines: CartLine[] }) {
             <div className="min-w-40 flex-1">
               <Link
                 href={`/product/${line.productHandle}`}
-                className="text-sm font-semibold text-earth-900 hover:text-chili-700"
+                className="text-sm font-semibold text-ink-900 hover:text-paprika-700"
               >
                 {line.title}
               </Link>
-              <p className="mt-0.5 text-xs text-earth-500">
+              <p className="mt-0.5 text-xs text-ink-500">
                 {line.variantTitle}
               </p>
-              <p className="mt-1 text-sm font-semibold text-earth-900">
+              <p className="mt-1 text-sm font-semibold text-ink-900">
                 {money(line.unitPrice, locale)}
               </p>
             </div>

@@ -1,38 +1,36 @@
 # Known issues and limitations
 
-## Resolved in Phase 3
+## Resolved across Phases 3–4
 
-These were real problems and are now fixed:
-
-- **Brand mark was a cream-background JPEG.** Replaced with an original
-  transparent SVG at the correct aspect ratio.
-- **Product visuals were a flat gradient with a letter.** Now an editorial
-  treatment that carries the Urdu name, and it uses the real Medusa thumbnail
-  when one exists.
-- **Shop category chips were hidden behind a horizontal scroll.** They now wrap
-  and are plain anchors, so they work without JavaScript and are crawlable.
-- **No cart drawer, no sticky mobile purchase bar, no loading skeletons, no
-  route error boundary.** All added.
-- **No availability information.** `GET /store/stock` feeds an in-stock /
-  out-of-stock state on the product page.
-- **Custom modules had no admin UI.** Delivery areas and WhatsApp orders now
-  have Medusa admin screens, verified in a browser.
-- **Rate limiting was per-process memory.** Now Redis-backed with a memory
-  fallback, and it returns `429` with rate-limit headers.
-- **Abandoned carts accumulated with no policy.** A retention job exists and is
-  disabled unless `CART_RETENTION_DAYS` is set.
-- **Request logging did not exist.** Added a privacy-safe logger (no bodies, no
-  headers).
-- **No focus-visible style, no skip link, no reduced-motion handling.** Added.
-- **Language switch did not apply until a manual reload.** Fixed.
-- **No canonical URLs, no generated Open Graph image.** Added.
+- Brand mark was a cream-background JPEG → replaced with an original transparent
+  SVG, with light/dark variants.
+- Product visuals were a flat gradient and a letter → replaced with an original
+  category-coloured artwork system that uses real Medusa thumbnails when present.
+- Shop category chips hid behind a horizontal scroll → they now wrap.
+- No cart drawer, no sticky mobile purchase bar, no loading skeletons, no route
+  error boundary → all added.
+- Custom admin modules had no UI → Delivery Areas and WhatsApp Orders screens added.
+- Rate limiting was per-process memory → Redis-backed with a memory fallback.
+- Abandoned carts had no policy → opt-in retention job added.
+- No request logging → privacy-safe logger added.
+- No focus-visible style, skip link or reduced-motion handling → added.
+- Language switch did not apply until reload → fixed.
+- No canonical URLs or generated Open Graph image → added.
+- The Vercel build failed prerendering `/sitemap.xml` → the sitemap now degrades
+  safely without a backend.
+- Overlays were clipped by the sticky header's `backdrop-blur` → they are
+  portaled to `<body>`.
+- The drawer served a cached empty cart → `no-store` on both the route and the
+  fetch.
+- The logo mirrored in RTL → the mark forces LTR.
+- A large backlog of retired design tokens (`cream-*`, `earth-*`, `chili-*`,
+  `leaf-*`, `gold-*`) remained in older pages → migrated.
 
 ## Still open
 
 ### Data and catalogue
 
-1. **12 products have no price** and are drafts. Publishing them needs a price
-   from the owner.
+1. **12 products have no price** and stay in draft. Publishing them needs a price.
 2. **Category assignment is a rule of thumb** and can be changed per product.
 3. **No product images** — the artwork is a placeholder, not a photograph.
 4. **"Best sellers" is not sales data**; the home page shows the first published
@@ -46,8 +44,7 @@ These were real problems and are now fixed:
 7. **Orders stay `payment_status = awaiting`.** No payment is captured.
 8. **Guest emails are synthetic** (`guest-<cart_id>@kmfoods.local`).
 9. **No online payment provider.** Only the system provider is configured.
-10. **The cart retention job is off by default.** Set `CART_RETENTION_DAYS` to
-    enable it.
+10. **The cart retention job is off by default.** Set `CART_RETENTION_DAYS`.
 
 ### Storefront
 
@@ -55,31 +52,36 @@ These were real problems and are now fixed:
 12. **Sorting happens in the browser.** Fine at 78 products.
 13. **Policy pages are drafts** and the footer says so.
 14. **No contact form** — WhatsApp only, because no mail service is configured.
-15. **`next/font/google` needs network at build time.** Self-host the fonts for
-    fully offline builds.
+15. **`next/font/google` needs network at build time.** Self-host for offline builds.
+16. **The shop category rail is sticky.** On very short viewports it can cover a
+    large share of the screen; it collapses with the page rather than floating
+    over content.
 
 ### Backend and infrastructure
 
-16. **Local development uses the in-memory event bus and lock.** Use Redis for
+17. **Local development uses the in-memory event bus and lock.** Use Redis for
     more than one instance.
-17. **The search index fills on application start.** A fresh migrate logs
+18. **The search index fills on application start.** A fresh migrate logs
     "no active version" until the app boots once.
-18. **Admin routes are guarded by authentication, not fine-grained RBAC
-    policies.** The custom routes ship without a `permissions` declaration, so
-    any authenticated admin can manage delivery areas and handoffs.
+19. **Admin routes are guarded by authentication, not fine-grained RBAC
+    policies.** Any authenticated admin can manage delivery areas and handoffs.
+20. **The local backend URL emits a warning on every call in development.** It is
+    throttled to once per process.
 
 ### Security
 
-19. **The publishable API key is public by design** and grants store access only.
-20. **No log-scrubbing pipeline** beyond not logging bodies or headers.
-21. **No dependency-vulnerability gate in CI yet.** Run `npm audit` before launch.
+21. **The publishable API key is public by design** and grants store access only.
+22. **No log-scrubbing pipeline** beyond not logging bodies or headers.
+23. **No dependency-vulnerability gate in CI yet.** Run `npm audit` before launch.
+24. **The `origin` remote embeds a GitHub token in `.git/config`.** Revoke it and
+    move to a credential helper.
 
 ### Testing
 
-22. **Admin API tests skip without credentials.** Set `E2E_ADMIN_EMAIL` and
+25. **Admin API tests skip without credentials.** Set `E2E_ADMIN_EMAIL` and
     `E2E_ADMIN_PASSWORD`.
-23. **No Jest integration tests for the backend workflow.**
-24. **No Lighthouse or load testing.** The performance numbers in
-    `docs/implementation-status.md` are a browser performance-API sample under
-    documented local conditions.
-25. **The CI workflow has never run on a runner.**
+26. **No Jest integration tests for the backend workflow.**
+27. **No Lighthouse or load testing.** The performance numbers in
+    `docs/implementation-status.md` are a browser performance-API sample.
+28. **The CI workflow has never run on a runner.**
+29. **Automated tests do not cover the new search overlay or the Pantry Shelf.**

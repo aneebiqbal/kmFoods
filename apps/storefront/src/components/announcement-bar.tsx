@@ -15,14 +15,14 @@ export function AnnouncementBar() {
   if (dismissed) return null;
 
   return (
-    <div className="bg-leaf-700 text-cream-50">
+    <div className="bg-aubergine-700 text-bone-50">
       <div className="relative mx-auto flex max-w-7xl items-center justify-center gap-3 px-4 py-2 text-center sm:px-6 lg:px-8">
         <p className="text-[11px] font-medium tracking-wide sm:text-xs">
           {t("announcement.text")}
         </p>
         <Link
           href="/delivery-policy"
-          className="hidden text-[11px] font-semibold text-gold-400 underline-offset-2 hover:underline sm:inline sm:text-xs"
+          className="hidden text-[11px] font-semibold text-saffron-400 underline-offset-2 hover:underline sm:inline sm:text-xs"
         >
           {t("announcement.link")}
         </Link>
@@ -30,7 +30,7 @@ export function AnnouncementBar() {
           type="button"
           onClick={() => setDismissed(true)}
           aria-label={t("common.close")}
-          className="absolute end-2 top-1/2 -translate-y-1/2 rounded-full p-1 text-cream-100/70 transition-colors hover:bg-cream-50/10 hover:text-cream-50"
+          className="absolute end-2 top-1/2 -translate-y-1/2 rounded-full p-1 text-bone-100/70 transition-colors hover:bg-bone-50/10 hover:text-bone-50"
         >
           <svg
             width="14"

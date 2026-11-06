@@ -7,6 +7,7 @@ import { useLanguage } from "@/i18n/language-context";
 import { money } from "@/lib/format";
 import type { StoreCart } from "@/lib/types";
 import { ProductVisual } from "@/components/product-visual";
+import { BodyPortal } from "@/components/body-portal";
 
 type CartLine = StoreCart["items"][number];
 
@@ -25,15 +26,15 @@ function DrawerLine({ line, locale }: { line: CartLine; locale: "en" | "ur" }) {
       <div className="min-w-0 flex-1">
         <Link
           href={`/product/${line.productHandle}`}
-          className="block truncate text-sm font-semibold text-earth-900 hover:text-chili-700"
+          className="block truncate text-sm font-semibold text-bone-50 hover:text-saffron-400"
         >
           {line.title}
         </Link>
-        <p className="text-xs text-earth-500">
+        <p className="text-xs text-bone-100/50">
           {line.variantTitle} × {line.quantity}
         </p>
       </div>
-      <p className="text-sm font-semibold text-earth-900">
+      <p className="text-sm font-semibold text-saffron-400">
         {money(line.unitPrice * line.quantity, locale)}
       </p>
     </li>
@@ -41,8 +42,9 @@ function DrawerLine({ line, locale }: { line: CartLine; locale: "en" | "ur" }) {
 }
 
 /**
- * Cart drawer. A server action supplies the cart so the drawer never trusts
- * client-side totals; the full cart page remains the editing surface.
+ * Cart drawer — a dark atelier panel. A server route supplies the cart so the
+ * drawer never trusts client-side totals; the full cart page remains the
+ * editing surface.
  */
 export function CartDrawer() {
   const { t, locale } = useLanguage();
@@ -55,7 +57,8 @@ export function CartDrawer() {
     if (!open) return;
     let cancelled = false;
     setLoading(true);
-    fetch("/api/cart")
+
+    fetch("/api/cart", { cache: "no-store" })
       .then((response) => (response.ok ? response.json() : null))
       .then((data) => {
         if (!cancelled) setCart(data?.cart ?? null);
@@ -66,6 +69,7 @@ export function CartDrawer() {
       .finally(() => {
         if (!cancelled) setLoading(false);
       });
+
     return () => {
       cancelled = true;
     };
@@ -75,9 +79,17 @@ export function CartDrawer() {
     function onKey(event: KeyboardEvent) {
       if (event.key === "Escape") setOpen(false);
     }
-    if (open) document.addEventListener("keydown", onKey);
-    return () => document.removeEventListener("keydown", onKey);
+    if (open) {
+      document.addEventListener("keydown", onKey);
+      document.body.style.overflow = "hidden";
+    }
+    return () => {
+      document.removeEventListener("keydown", onKey);
+      document.body.style.overflow = "";
+    };
   }, [open]);
+
+  const itemCount = cart?.itemCount ?? 0;
 
   return (
     <>
@@ -102,32 +114,33 @@ export function CartDrawer() {
           <path d="M6 7h12l1 13H5L6 7Z" />
           <path d="M9 7a3 3 0 0 1 6 0" />
         </svg>
-        {cart && cart.itemCount > 0 && (
-          <span className="absolute -right-1 -top-1 flex h-5 min-w-5 items-center justify-center rounded-full bg-chili-600 px-1 text-[10px] font-bold text-cream-50">
-            {cart.itemCount}
+        {itemCount > 0 && (
+          <span className="absolute -right-1 -top-1 flex h-5 min-w-5 items-center justify-center rounded-full bg-paprika-500 px-1 text-[0.625rem] font-bold text-bone-50">
+            {itemCount}
           </span>
         )}
       </button>
 
       {open && (
+        <BodyPortal>
         <div
-          className="fixed inset-0 z-50 flex justify-end bg-earth-900/40 backdrop-blur-sm"
+          className="fixed inset-0 z-50 flex justify-end bg-aubergine-900/55 backdrop-blur-sm"
           role="dialog"
           aria-modal="true"
           aria-label={t("nav.cart")}
           onClick={() => setOpen(false)}
         >
           <aside
-            className="flex h-full w-full max-w-md flex-col bg-cream-50 shadow-2xl"
+            className="core-dark grain grain-dark flex h-full w-full max-w-md flex-col"
             onClick={(event) => event.stopPropagation()}
           >
-            <header className="flex items-center justify-between border-b border-earth-900/10 px-5 py-4">
-              <h2 className="text-lg font-semibold">{t("cart.title")}</h2>
+            <header className="flex items-center justify-between border-b border-bone-50/10 px-5 py-4">
+              <h2 className="text-lg font-semibold text-bone-50">{t("cart.title")}</h2>
               <button
                 type="button"
                 onClick={() => setOpen(false)}
                 aria-label={t("common.close")}
-                className="rounded-full p-2 text-earth-600 transition-colors hover:bg-cream-100"
+                className="rounded-full p-2 text-bone-100/70 transition-colors hover:bg-bone-50/10 hover:text-bone-50"
               >
                 <svg
                   width="18"
@@ -146,13 +159,13 @@ export function CartDrawer() {
 
             <div className="flex-1 overflow-y-auto px-5 py-4">
               {loading && (
-                <ul className="space-y-4">
+                <ul className="space-y-4" aria-hidden="true">
                   {Array.from({ length: 3 }).map((_, index) => (
                     <li key={index} className="flex animate-pulse gap-3">
-                      <div className="h-14 w-14 rounded-xl bg-cream-200" />
+                      <div className="h-14 w-14 rounded-xl bg-bone-50/10" />
                       <div className="flex-1 space-y-2 py-1">
-                        <div className="h-3 w-3/4 rounded bg-cream-200" />
-                        <div className="h-3 w-1/2 rounded bg-cream-200" />
+                        <div className="h-3 w-3/4 rounded bg-bone-50/10" />
+                        <div className="h-3 w-1/2 rounded bg-bone-50/10" />
                       </div>
                     </li>
                   ))}
@@ -160,7 +173,7 @@ export function CartDrawer() {
               )}
 
               {!loading && (!cart || cart.items.length === 0) && (
-                <p className="py-12 text-center text-sm text-earth-600">
+                <p className="py-12 text-center text-sm text-bone-100/60">
                   {t("cart.emptyCart")}
                 </p>
               )}
@@ -175,28 +188,28 @@ export function CartDrawer() {
             </div>
 
             {cart && cart.items.length > 0 && (
-              <footer className="border-t border-earth-900/10 px-5 py-4">
+              <footer className="border-t border-bone-50/10 px-5 py-4">
                 <div className="flex items-center justify-between text-sm">
-                  <span className="text-earth-600">{t("cart.subtotal")}</span>
-                  <span className="font-semibold text-earth-900">
+                  <span className="text-bone-100/70">{t("cart.subtotal")}</span>
+                  <span className="font-semibold text-bone-50">
                     {money(cart.subtotal, locale)}
                   </span>
                 </div>
-                <p className="mt-1 text-xs text-earth-500">{t("cart.deliveryNote")}</p>
+                <p className="mt-1 text-xs text-bone-100/50">{t("cart.deliveryNote")}</p>
                 <button
                   type="button"
                   onClick={() => {
                     setOpen(false);
                     router.push("/cart");
                   }}
-                  className="btn btn-primary mt-4 w-full px-6 py-3 text-sm"
+                  className="btn btn-on-dark mt-4 w-full px-6 py-3 text-sm"
                 >
                   {t("cart.title")}
                 </button>
                 <Link
                   href="/checkout"
                   onClick={() => setOpen(false)}
-                  className="btn btn-secondary mt-2 w-full px-6 py-3 text-sm"
+                  className="btn btn-accent mt-2 w-full px-6 py-3 text-sm"
                 >
                   {t("cart.checkout")}
                 </Link>
@@ -204,6 +217,7 @@ export function CartDrawer() {
             )}
           </aside>
         </div>
+        </BodyPortal>
       )}
     </>
   );

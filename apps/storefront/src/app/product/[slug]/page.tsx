@@ -91,16 +91,16 @@ export default async function ProductPage({
         dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
       />
 
-      <nav className="mb-8 text-xs text-earth-500" aria-label="Breadcrumb">
-        <Link href="/" className="hover:text-chili-700">
+      <nav className="mb-8 text-xs text-ink-500" aria-label="Breadcrumb">
+        <Link href="/" className="hover:text-paprika-700">
           {translate(locale, "nav.home")}
         </Link>
         <span className="mx-2">/</span>
-        <Link href="/shop" className="hover:text-chili-700">
+        <Link href="/shop" className="hover:text-paprika-700">
           {translate(locale, "nav.shop")}
         </Link>
         <span className="mx-2">/</span>
-        <span className="text-earth-700">{product.title}</span>
+        <span className="text-ink-700">{product.title}</span>
       </nav>
 
       <div className="grid gap-10 lg:grid-cols-2 lg:gap-16">
@@ -130,7 +130,7 @@ export default async function ProductPage({
                   : product.title}
               </h1>
               {product.titleUr && locale === "en" && (
-                <p className="mt-2 text-lg text-earth-500">{product.titleUr}</p>
+                <p className="mt-2 text-lg text-ink-500">{product.titleUr}</p>
               )}
             </div>
 
@@ -139,12 +139,12 @@ export default async function ProductPage({
                 {product.variants.map((variant) => (
                   <div
                     key={variant.id}
-                    className="rounded-2xl border border-earth-900/10 bg-cream-100 px-4 py-3"
+                    className="rounded-2xl border border-ink-900/10 bg-bone-100 px-4 py-3"
                   >
-                    <p className="text-[10px] uppercase tracking-[0.18em] text-earth-500">
+                    <p className="text-[10px] uppercase tracking-[0.18em] text-ink-500">
                       {variant.title}
                     </p>
-                    <p className="mt-1 font-semibold text-earth-900">
+                    <p className="mt-1 font-semibold text-ink-900">
                       {variant.price === null
                         ? "—"
                         : priceWithCurrency(variant.price)}
@@ -156,10 +156,10 @@ export default async function ProductPage({
 
             {product.description && (
               <div>
-                <h2 className="text-xs font-semibold uppercase tracking-[0.18em] text-earth-500">
+                <h2 className="text-xs font-semibold uppercase tracking-[0.18em] text-ink-500">
                   {translate(locale, "product.description")}
                 </h2>
-                <p className="mt-3 leading-relaxed text-earth-600">
+                <p className="mt-3 leading-relaxed text-ink-600">
                   {product.description}
                 </p>
               </div>

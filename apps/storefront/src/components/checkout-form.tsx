@@ -25,7 +25,7 @@ type Item = {
 };
 
 function fieldClass() {
-  return "w-full rounded-2xl border border-earth-900/12 bg-cream-50 px-4 py-3 text-sm outline-none transition-colors focus:border-chili-600";
+  return "w-full rounded-2xl border border-ink-900/12 bg-bone-50 px-4 py-3 text-sm outline-none transition-colors focus:border-paprika-600";
 }
 
 export function CheckoutForm({
@@ -92,7 +92,7 @@ export function CheckoutForm({
     return (
       <div className="shell">
         <div className="core flex flex-col items-center gap-4 px-6 py-14 text-center">
-          <div className="flex h-14 w-14 items-center justify-center rounded-full bg-leaf-600/10 text-leaf-600">
+          <div className="flex h-14 w-14 items-center justify-center rounded-full bg-olive-600/10 text-olive-600">
             <svg
               width="26"
               height="26"
@@ -110,11 +110,11 @@ export function CheckoutForm({
           <h2 className="text-2xl font-semibold">{t("checkout.successTitle")}</h2>
           <p
             data-testid="order-reference"
-            className="text-sm font-semibold tracking-[0.18em] text-chili-700"
+            className="text-sm font-semibold tracking-[0.18em] text-paprika-700"
           >
             {state.reference}
           </p>
-          <p className="max-w-md text-sm leading-relaxed text-earth-600">
+          <p className="max-w-md text-sm leading-relaxed text-ink-600">
             {t("checkout.successBody")}
           </p>
           {state.whatsappUrl ? (
@@ -127,13 +127,13 @@ export function CheckoutForm({
               {t("checkout.sendWhatsapp")}
             </a>
           ) : (
-            <p className="mt-2 text-sm text-chili-700">
+            <p className="mt-2 text-sm text-paprika-700">
               {t("checkout.areaNotServiceable")}
             </p>
           )}
           <Link
             href={`/order/${state.reference}`}
-            className="link-underline text-sm font-semibold text-earth-700"
+            className="link-underline text-sm font-semibold text-ink-700"
           >
             {t("order.title")}
           </Link>
@@ -150,7 +150,7 @@ export function CheckoutForm({
             <div>
               <label
                 htmlFor="customer_name"
-                className="text-xs font-semibold uppercase tracking-[0.16em] text-earth-500"
+                className="text-xs font-semibold uppercase tracking-[0.16em] text-ink-500"
               >
                 {t("checkout.name")} *
               </label>
@@ -165,7 +165,7 @@ export function CheckoutForm({
             <div>
               <label
                 htmlFor="customer_phone"
-                className="text-xs font-semibold uppercase tracking-[0.16em] text-earth-500"
+                className="text-xs font-semibold uppercase tracking-[0.16em] text-ink-500"
               >
                 {t("checkout.phone")} *
               </label>
@@ -186,7 +186,7 @@ export function CheckoutForm({
             <div>
               <label
                 htmlFor="delivery_city"
-                className="text-xs font-semibold uppercase tracking-[0.16em] text-earth-500"
+                className="text-xs font-semibold uppercase tracking-[0.16em] text-ink-500"
               >
                 {t("checkout.city")} *
               </label>
@@ -208,7 +208,7 @@ export function CheckoutForm({
             <div>
               <label
                 htmlFor="delivery_area"
-                className="text-xs font-semibold uppercase tracking-[0.16em] text-earth-500"
+                className="text-xs font-semibold uppercase tracking-[0.16em] text-ink-500"
               >
                 {t("checkout.area")}
               </label>
@@ -232,7 +232,7 @@ export function CheckoutForm({
           <div>
             <label
               htmlFor="delivery_address"
-              className="text-xs font-semibold uppercase tracking-[0.16em] text-earth-500"
+              className="text-xs font-semibold uppercase tracking-[0.16em] text-ink-500"
             >
               {t("checkout.address")} *
             </label>
@@ -249,7 +249,7 @@ export function CheckoutForm({
           <div>
             <label
               htmlFor="customer_email"
-              className="text-xs font-semibold uppercase tracking-[0.16em] text-earth-500"
+              className="text-xs font-semibold uppercase tracking-[0.16em] text-ink-500"
             >
               {t("contact.email")}
             </label>
@@ -263,12 +263,12 @@ export function CheckoutForm({
           </div>
 
           {error && (
-            <p className="text-sm text-chili-700" role="alert">
+            <p className="text-sm text-paprika-700" role="alert">
               {error}
             </p>
           )}
           {state.status === "error" && (
-            <p className="text-sm text-chili-700" role="alert">
+            <p className="text-sm text-paprika-700" role="alert">
               {state.message}
             </p>
           )}
@@ -293,34 +293,34 @@ export function CheckoutForm({
                 className="flex items-start justify-between gap-3"
               >
                 <div>
-                  <p className="font-medium text-earth-900">{item.title}</p>
-                  <p className="text-xs text-earth-500">
+                  <p className="font-medium text-ink-900">{item.title}</p>
+                  <p className="text-xs text-ink-500">
                     {item.variantTitle} × {item.quantity}
                   </p>
                 </div>
-                <p className="font-semibold text-earth-900">
+                <p className="font-semibold text-ink-900">
                   {money(item.unitPrice * item.quantity, locale)}
                 </p>
               </li>
             ))}
           </ul>
-          <dl className="mt-5 space-y-2 border-t border-earth-900/10 pt-4 text-sm">
+          <dl className="mt-5 space-y-2 border-t border-ink-900/10 pt-4 text-sm">
             <div className="flex items-center justify-between">
-              <dt className="text-earth-600">{t("cart.subtotal")}</dt>
+              <dt className="text-ink-600">{t("cart.subtotal")}</dt>
               <dd className="font-semibold">{money(subtotal, locale)}</dd>
             </div>
             <div className="flex items-center justify-between">
-              <dt className="text-earth-600">{t("cart.delivery")}</dt>
+              <dt className="text-ink-600">{t("cart.delivery")}</dt>
               <dd className="font-semibold">{money(feePkr, locale)}</dd>
             </div>
-            <div className="flex items-center justify-between border-t border-earth-900/10 pt-3">
-              <dt className="font-semibold text-earth-900">{t("cart.total")}</dt>
-              <dd className="text-lg font-semibold text-chili-700">
+            <div className="flex items-center justify-between border-t border-ink-900/10 pt-3">
+              <dt className="font-semibold text-ink-900">{t("cart.total")}</dt>
+              <dd className="text-lg font-semibold text-paprika-700">
                 {money(subtotal + feePkr, locale)}
               </dd>
             </div>
           </dl>
-          <p className="mt-3 text-xs leading-relaxed text-earth-500">
+          <p className="mt-3 text-xs leading-relaxed text-ink-500">
             {t("cart.deliveryNote")}
           </p>
         </div>

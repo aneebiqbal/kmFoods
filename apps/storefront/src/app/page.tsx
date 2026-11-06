@@ -1,121 +1,151 @@
 import Link from "next/link";
-import { CATEGORY_LABELS, translate, type Category } from "@kmfoods/shared";
+import { CATEGORY_LABELS, translate, type Category, type Locale } from "@kmfoods/shared";
 import { getDefaultRegion, listCategories, listProducts } from "@/lib/products";
 import { getLocale } from "@/i18n/locale";
-import { productTitle } from "@/lib/format";
+import { money, productTitle } from "@/lib/format";
 import { ProductCard } from "@/components/product-card";
 import { ProductVisual } from "@/components/product-visual";
+import { ProductMedia } from "@/components/product-card";
+import { PantryShelf, type Shelf } from "@/components/pantry-shelf";
 import { Reveal, Section, SectionHeading } from "@/components/ui";
+import type { StoreProduct } from "@/lib/types";
 
 export const dynamic = "force-dynamic";
 
-export default async function HomePage() {
-  const locale = await getLocale();
-  const region = await getDefaultRegion();
+/* ── Scrolling ingredient rail ─────────────────────────────────────────── */
+const RAIL_WORDS = [
+  "Red Chili",
+  "Turmeric",
+  "Black Pepper",
+  "Cumin",
+  "Cardamom",
+  "Cinnamon",
+  "Almond",
+  "Flax Seed",
+  "Saffron",
+  "Olive",
+  "Coriander",
+  "Fennel",
+];
 
-  if (!region) {
-    return (
-      <Section>
-        <p className="text-earth-600">
-          {translate(locale, "common.error")}
-        </p>
-      </Section>
-    );
-  }
-
-  const [{ products }, categories] = await Promise.all([
-    listProducts({ regionId: region.id, limit: 12 }),
-    listCategories(),
-  ]);
-
-  const hero = products[0];
-  const featured = products.slice(0, 8);
-  const sidekick = products.slice(1, 4);
-  const essentials = products.filter((product) =>
-    ["cooking-essentials", "ground-spices", "seeds"].includes(
-      product.category ?? ""
-    )
-  ).slice(0, 4);
-
+function IngredientRail() {
   return (
-    <div>
-      {/* Hero — editorial split: confident type left, layered product art right */}
-      <section className="grain relative overflow-hidden bg-cream-100">
-        <div className="pointer-events-none absolute -right-24 -top-24 h-96 w-96 rounded-full bg-chili-600/5 blur-3xl" />
-        <div className="mx-auto grid max-w-7xl gap-12 px-4 py-16 sm:px-6 lg:grid-cols-2 lg:items-center lg:gap-16 lg:py-28 lg:px-8">
-          <Reveal>
-            <span className="eyebrow">{translate(locale, "home.heroEyebrow")}</span>
-            <h1 className="mt-6 text-5xl font-semibold leading-[1.03] sm:text-6xl lg:text-7xl">
-              {translate(locale, "home.heroTitle")}
-            </h1>
-            <p className="mt-6 max-w-lg text-lg leading-relaxed text-earth-600">
-              {translate(locale, "home.heroSubtitle")}
-            </p>
-            <div className="mt-9 flex flex-wrap items-center gap-3">
-              <Link href="/shop" className="btn btn-primary px-6 py-3 text-sm">
-                {translate(locale, "home.heroCta")}
-                <span className="btn-icon" aria-hidden="true">
-                  <svg
-                    width="16"
-                    height="16"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="1.8"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  >
-                    <path d="M5 12h14M13 6l6 6-6 6" />
-                  </svg>
-                </span>
-              </Link>
-              <Link href="/cart" className="btn btn-ghost px-6 py-3 text-sm">
-                {translate(locale, "home.heroSecondary")}
-              </Link>
-            </div>
-            <dl className="mt-12 grid max-w-md grid-cols-3 gap-6 border-t border-earth-900/10 pt-6">
-              {[
-                {
-                  value: "78+",
-                  label: locale === "ur" ? "مصنوعات" : "Products",
-                },
-                {
-                  value: "Lahore",
-                  label: locale === "ur" ? "ڈیلیوری" : "Delivery",
-                },
-                {
-                  value: "PKR",
-                  label: locale === "ur" ? "قیمتیں" : "Pricing",
-                },
-              ].map((stat) => (
-                <div key={stat.label}>
-                  <dt className="font-display text-2xl font-semibold text-chili-700">
-                    {stat.value}
-                  </dt>
-                  <dd className="mt-1 text-xs uppercase tracking-[0.16em] text-earth-500">
-                    {stat.label}
-                  </dd>
-                </div>
-              ))}
-            </dl>
-          </Reveal>
+    <div
+      className="overflow-hidden border-y border-ink-900/8 bg-bone-100 py-4"
+      aria-hidden="true"
+    >
+      <div className="animate-marquee flex w-max items-center gap-10">
+        {[...RAIL_WORDS, ...RAIL_WORDS].map((word, index) => (
+          <span
+            key={`${word}-${index}`}
+            className="flex items-center gap-10 text-[0.6875rem] font-semibold uppercase tracking-[0.3em] text-ink-500"
+          >
+            {word}
+            <span className="h-1 w-1 rounded-full bg-paprika-500" />
+          </span>
+        ))}
+      </div>
+    </div>
+  );
+}
 
-          {/* Layered product composition — Z-axis cascade with real catalogue data */}
-          <Reveal delay={140} className="relative">
-            <div className="relative mx-auto h-[26rem] max-w-md sm:h-[30rem]">
-              {sidekick.map((product, index) => (
+/* ── Scene 1 · Immersive introduction ──────────────────────────────────── */
+function Hero({
+  hero,
+  sidekicks,
+  locale,
+}: {
+  hero: StoreProduct;
+  sidekicks: StoreProduct[];
+  locale: Locale;
+}) {
+  return (
+    <section className="grain grain-dark relative overflow-hidden bg-aubergine-900 text-bone-100">
+      {/* Atmospheric glows */}
+      <div
+        className="pointer-events-none absolute -left-32 top-0 h-[38rem] w-[38rem] rounded-full bg-paprika-500/12 blur-3xl"
+        aria-hidden="true"
+      />
+      <div
+        className="pointer-events-none absolute -right-40 bottom-0 h-[42rem] w-[42rem] rounded-full bg-saffron-500/10 blur-3xl"
+        aria-hidden="true"
+      />
+
+      {/* Drifting spice motes — pure CSS, cheap on the GPU */}
+      <div className="pointer-events-none absolute inset-0 overflow-hidden" aria-hidden="true">
+        {[
+          { left: "12%", size: 6, delay: "0s", duration: "11s" },
+          { left: "28%", size: 4, delay: "1.4s", duration: "14s" },
+          { left: "47%", size: 7, delay: "0.8s", duration: "12s" },
+          { left: "63%", size: 5, delay: "2.2s", duration: "15s" },
+          { left: "79%", size: 4, delay: "0.4s", duration: "10s" },
+          { left: "90%", size: 6, delay: "1.9s", duration: "13s" },
+        ].map((mote, index) => (
+          <span
+            key={index}
+            className="animate-drift absolute top-1/3 rounded-full bg-saffron-400/40"
+            style={{
+              left: mote.left,
+              width: mote.size,
+              height: mote.size,
+              animationDelay: mote.delay,
+              animationDuration: mote.duration,
+            }}
+          />
+        ))}
+      </div>
+
+      <div className="relative mx-auto grid max-w-[90rem] gap-14 px-4 pb-20 pt-16 sm:px-6 lg:grid-cols-[1.15fr_1fr] lg:items-center lg:gap-20 lg:px-8 lg:pb-28 lg:pt-24">
+        <Reveal>
+          <span className="eyebrow eyebrow-on-dark">
+            {translate(locale, "home.heroEyebrow")}
+          </span>
+          <h1 className="display-hero mt-7 text-[clamp(3rem,8.5vw,7rem)] text-bone-50">
+            {translate(locale, "home.heroTitle")}
+          </h1>
+          <p className="mt-7 max-w-lg text-base leading-relaxed text-bone-100/75 sm:text-lg">
+            {translate(locale, "home.heroSubtitle")}
+          </p>
+          <div className="mt-10 flex flex-wrap items-center gap-3">
+            <Link href="/shop" className="btn btn-accent px-7 py-3.5 text-sm">
+              {translate(locale, "home.heroCta")}
+              <span className="btn-icon" aria-hidden="true">
+                <svg
+                  width="16"
+                  height="16"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="1.8"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <path d="M5 12h14M13 6l6 6-6 6" />
+                </svg>
+              </span>
+            </Link>
+            <Link href="/cart" className="btn btn-on-dark px-7 py-3.5 text-sm">
+              {translate(locale, "home.heroSecondary")}
+            </Link>
+          </div>
+        </Reveal>
+
+          {/* Layered ingredient composition */}
+          <Reveal delay={160} className="relative">
+            <div className="relative mx-auto h-[24rem] max-w-md sm:h-[30rem]">
+              {sidekicks.map((product, index) => (
                 <div
                   key={product.id}
-                  className="shell absolute"
+                  className="stage absolute"
                   style={{
-                    width: `${58 - index * 10}%`,
-                    top: `${index * 20}%`,
-                    insetInlineStart: `${index * 38}%`,
-                    transform: `rotate(${index % 2 === 0 ? -3 : 3}deg)`,
+                    width: "46%",
+                    top: `${5 + index * 17}%`,
+                    insetInlineStart: `${index * 48}%`,
+                    transform: `rotate(${index % 2 === 0 ? -5 : 5}deg)`,
                     zIndex: 10 - index,
                   }}
                 >
-                  <div className="core overflow-hidden">
+                  <div className="core-dark overflow-hidden">
                     <ProductVisual
                       title={product.title}
                       titleUr={product.titleUr}
@@ -127,8 +157,16 @@ export default async function HomePage() {
                 </div>
               ))}
               {hero && (
-                <div className="shell absolute inset-x-0 top-0 z-20">
-                  <div className="core overflow-hidden">
+                <div
+                  className="stage absolute"
+                  style={{
+                    width: "70%",
+                    top: "0%",
+                    insetInlineStart: "15%",
+                    zIndex: 20,
+                  }}
+                >
+                  <div className="core-dark overflow-hidden">
                     <ProductVisual
                       title={hero.title}
                       titleUr={hero.titleUr}
@@ -140,73 +178,267 @@ export default async function HomePage() {
                 </div>
               )}
             </div>
-            {hero && (
-              <p className="mt-5 text-center text-xs uppercase tracking-[0.2em] text-earth-500">
-                {productTitle(hero.title, hero.titleUr, locale)}
-              </p>
-            )}
           </Reveal>
-        </div>
-      </section>
+      </div>
+    </section>
+  );
+}
 
-      {/* Trust */}
-      <Section className="py-16">
-        <div className="grid gap-4 sm:grid-cols-3">
-          {(
-            [
-              ["home.trustQuality", "home.trustQualityBody"],
-              ["home.trustPricing", "home.trustPricingBody"],
-              ["home.trustDelivery", "home.trustDeliveryBody"],
-            ] as const
-          ).map(([title, body], index) => (
-            <Reveal key={title} delay={index * 90}>
-              <div className="shell h-full">
-                <div className="core h-full p-6">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-full bg-chili-600/10 text-chili-700">
-                    <svg
-                      width="18"
-                      height="18"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="1.6"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      aria-hidden="true"
-                    >
-                      <path d="M12 3l7 4v6c0 4-3 6-7 6s-7-2-7-6V7l7-4Z" />
-                      <path d="m9 12 2 2 4-4" />
-                    </svg>
+/* ── Scene 2 · Ingredient navigator ───────────────────────────────────── */
+function IngredientNavigator({
+  categories,
+  counts,
+  locale,
+}: {
+  categories: Array<{ id: string; name: string; handle: string }>;
+  counts: Record<string, number>;
+  locale: Locale;
+}) {
+
+  return (
+    <Section className="py-16 lg:py-24">
+      <div className="flex flex-wrap items-end justify-between gap-6">
+        <SectionHeading
+          eyebrow={translate(locale, "home.navigatorEyebrow")}
+          title={translate(locale, "home.navigatorTitle")}
+          subtitle={translate(locale, "home.navigatorSubtitle")}
+        />
+      </div>
+
+      <div className="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
+        {categories.map((category, index) => {
+          const labels = CATEGORY_LABELS[category.handle as Category];
+          return (
+            <Reveal key={category.id} delay={index * 70}>
+              <Link
+                href={`/shop?category=${category.handle}`}
+                className="stage group block h-full"
+              >
+                <div className="core relative flex h-full flex-col justify-between overflow-hidden p-5">
+                  <span
+                    className="index-outline absolute -right-2 -top-3 text-7xl"
+                    aria-hidden="true"
+                  >
+                    {String(index + 1).padStart(2, "0")}
+                  </span>
+                  <div className="relative h-24 w-24 overflow-hidden rounded-2xl">
+                    <ProductVisual
+                      title={category.name}
+                      titleUr={null}
+                      category={category.handle}
+                      locale={locale}
+                      className="h-full w-full"
+                    />
                   </div>
-                  <h3 className="mt-4 text-lg font-semibold">
-                    {translate(locale, title)}
+                  <div className="relative mt-6">
+                    <h3 className="text-base font-semibold text-ink-900">
+                      {labels ? labels[locale] : category.name}
+                    </h3>
+                    <p className="mt-1 text-xs text-ink-500">
+                      {counts[category.handle] ?? 0} {translate(locale, "pantry.items")}
+                    </p>
+                  </div>
+                </div>
+              </Link>
+            </Reveal>
+          );
+        })}
+      </div>
+    </Section>
+  );
+}
+
+/* ── Scene 3 · Product storytelling ────────────────────────────────────── */
+function Storytelling({
+  products,
+  locale,
+}: {
+  products: StoreProduct[];
+  locale: Locale;
+}) {
+
+  return (
+    <Section className="py-16 lg:pb-10 lg:pt-24">
+      <SectionHeading
+        eyebrow={translate(locale, "home.storyEyebrow")}
+        title={translate(locale, "home.storyTitle")}
+        subtitle={translate(locale, "home.storySubtitle")}
+        align="center"
+      />
+
+      <div className="mt-14 space-y-8">
+        {products.map((product, index) => (
+          <Reveal key={product.id}>
+            <article
+              className={`stage ${index % 2 === 1 ? "lg:[direction:rtl]" : ""}`}
+            >
+              <div
+                className={`core grid items-center gap-8 p-6 sm:p-10 lg:grid-cols-2 ${
+                  index % 2 === 1 ? "lg:[direction:ltr]" : ""
+                }`}
+              >
+                <div className="relative overflow-hidden rounded-3xl">
+                  <ProductMedia
+                    product={product}
+                    locale={locale}
+                    className="aspect-[4/3]"
+                    variantLabel={product.variants
+                      .map((variant) => variant.title)
+                      .join(" / ")}
+                  />
+                </div>
+                <div>
+                  <span className="numeral text-6xl">
+                    {String(index + 1).padStart(2, "0")}
+                  </span>
+                  <h3 className="mt-4 text-3xl font-semibold text-ink-900 sm:text-4xl">
+                    {productTitle(product.title, product.titleUr, locale)}
                   </h3>
-                  <p className="mt-2 text-sm leading-relaxed text-earth-600">
-                    {translate(locale, body)}
+                  <p className="mt-4 max-w-md text-sm leading-relaxed text-ink-600 sm:text-base">
+                    {product.description}
                   </p>
+                  <dl className="mt-7 flex flex-wrap gap-3">
+                    {product.variants.map((variant) => (
+                      <div
+                        key={variant.id}
+                        className="rounded-2xl border border-ink-900/10 bg-bone-100 px-4 py-3"
+                      >
+                        <dt className="text-[0.5625rem] uppercase tracking-[0.2em] text-ink-500">
+                          {variant.title}
+                        </dt>
+                        <dd className="price mt-1 text-base">
+                          {variant.price !== null ? money(variant.price, locale) : "—"}
+                        </dd>
+                      </div>
+                    ))}
+                  </dl>
+                  <Link
+                    href={`/product/${product.handle}`}
+                    className="btn btn-primary mt-8 px-6 py-3 text-sm"
+                  >
+                    {translate(locale, "product.view")}
+                  </Link>
                 </div>
               </div>
-            </Reveal>
-          ))}
-        </div>
-      </Section>
+            </article>
+          </Reveal>
+        ))}
+      </div>
+    </Section>
+  );
+}
 
-      {/* Featured products */}
+/* ── Scene 4 · One-conversation checkout ──────────────────────────────── */
+function WhatsAppScene({ locale }: { locale: Locale }) {
+  const steps = [
+    "home.steps1",
+    "home.steps2",
+    "home.steps3",
+  ] as const;
+
+  return (
+    <Section className="py-16 lg:py-24">
+      <div className="stage">
+        <div className="core-dark grain grain-dark relative overflow-hidden p-8 sm:p-12 lg:p-16">
+          <div className="relative grid gap-12 lg:grid-cols-[1.1fr_1fr] lg:items-center">
+            <Reveal>
+              <span className="eyebrow eyebrow-on-dark">
+                {translate(locale, "home.checkoutEyebrow")}
+              </span>
+              <h2 className="display-section mt-5 text-4xl text-bone-50 sm:text-5xl">
+                {translate(locale, "home.whatsappTitle")}
+              </h2>
+              <p className="mt-5 max-w-md text-sm leading-relaxed text-bone-100/70 sm:text-base">
+                {translate(locale, "home.whatsappBody")}
+              </p>
+              <Link href="/cart" className="btn btn-accent mt-8 px-7 py-3.5 text-sm">
+                {translate(locale, "home.whatsappCta")}
+              </Link>
+              <p className="mt-5 max-w-sm text-xs leading-relaxed text-bone-100/55">
+                {translate(locale, "home.stepsNote")}
+              </p>
+            </Reveal>
+
+            <Reveal delay={140}>
+              <ol className="space-y-4">
+                {steps.map((key, index) => (
+                  <li
+                    key={key}
+                    className="core-dark flex items-start gap-4 rounded-2xl border border-bone-50/10 p-4"
+                  >
+                    <span className="numeral index-outline-dark text-3xl">
+                      {index + 1}
+                    </span>
+                    <p className="text-sm font-semibold text-bone-50">
+                      {translate(locale, key)}
+                    </p>
+                  </li>
+                ))}
+              </ol>
+            </Reveal>
+          </div>
+        </div>
+      </div>
+    </Section>
+  );
+}
+
+/* ── Page ─────────────────────────────────────────────────────────────── */
+export default async function HomePage() {
+  const locale = await getLocale();
+  const region = await getDefaultRegion();
+
+  if (!region) {
+    return (
       <Section>
-        <div className="flex flex-wrap items-end justify-between gap-4">
+        <p className="text-ink-600">{translate(locale, "common.error")}</p>
+      </Section>
+    );
+  }
+
+  const [{ products }, categories] = await Promise.all([
+    listProducts({ regionId: region.id, limit: 60 }),
+    listCategories(),
+  ]);
+
+  const hero = products[0];
+  const sidekicks = products.slice(1, 4);
+  const featured = products.filter((product) => product.variants.length > 0).slice(0, 8);
+  const story = products.filter((product) => product.variants.length > 1).slice(2, 4);
+
+  const counts: Record<string, number> = {};
+  for (const product of products) {
+    if (product.category) {
+      counts[product.category] = (counts[product.category] ?? 0) + 1;
+    }
+  }
+
+  const shelves: Shelf[] = categories
+    .map((category) => ({
+      category: category.handle,
+      products: products.filter((product) => product.category === category.handle).slice(0, 5),
+    }))
+    .filter((shelf) => shelf.products.length > 0);
+
+  return (
+    <div>
+      {hero && <Hero hero={hero} sidekicks={sidekicks} locale={locale} />}
+      <IngredientRail />
+
+      <IngredientNavigator categories={categories} counts={counts} locale={locale} />
+
+      <Section className="pt-0">
+        <div className="mb-10 flex flex-wrap items-end justify-between gap-4">
           <SectionHeading
-            eyebrow={translate(locale, "common.tagline")}
-            title={translate(locale, "home.bestsellers")}
-            subtitle={translate(locale, "home.bestsellersSubtitle")}
+            eyebrow={translate(locale, "home.selectionEyebrow")}
+            title={translate(locale, "home.selectionTitle")}
+            subtitle={translate(locale, "home.selectionSubtitle")}
           />
-          <Link
-            href="/shop"
-            className="link-underline text-sm font-semibold text-chili-700"
-          >
+          <Link href="/shop" className="link-underline text-sm font-semibold text-paprika-600">
             {translate(locale, "common.viewAll")}
           </Link>
         </div>
-        <div className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
           {featured.map((product, index) => (
             <Reveal key={product.id} delay={(index % 4) * 70}>
               <ProductCard product={product} locale={locale} />
@@ -215,196 +447,31 @@ export default async function HomePage() {
         </div>
       </Section>
 
-      {/* Categories */}
-      <Section>
-        <SectionHeading
-          eyebrow={translate(locale, "common.tagline")}
-          title={translate(locale, "home.categories")}
-          subtitle={translate(locale, "home.categoriesSubtitle")}
-          align="center"
-        />
-        <div className="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          {categories.map((category, index) => {
-            const labels = CATEGORY_LABELS[category.handle as Category];
-            return (
-              <Reveal key={category.id} delay={index * 60}>
-                <Link
-                  href={`/shop?category=${category.handle}`}
-                  className="shell group block"
-                >
-                  <div className="core flex items-center justify-between gap-4 p-5">
-                    <div>
-                      <h3 className="text-base font-semibold text-earth-900">
-                        {labels ? labels[locale] : category.name}
-                      </h3>
-                      <p className="mt-1 text-xs text-earth-500">
-                        {category.handle}
-                      </p>
-                    </div>
-                    <span className="btn-icon shrink-0" aria-hidden="true">
-                      <svg
-                        width="16"
-                        height="16"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth="1.8"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                      >
-                        <path d="M5 12h14M13 6l6 6-6 6" />
-                      </svg>
-                    </span>
-                  </div>
-                </Link>
-              </Reveal>
-            );
-          })}
-        </div>
-      </Section>
-
-      {/* Brand story */}
       <Section className="pt-0">
-        <div className="shell">
-          <div className="core grain relative overflow-hidden px-8 py-14 lg:px-16 lg:py-20">
-            <div
-              className="pointer-events-none absolute inset-0 opacity-40"
-              style={{
-                background:
-                  "radial-gradient(circle at 12% 0%, rgba(200,155,60,0.28), transparent 55%)",
-              }}
-            />
-            <div className="relative grid gap-10 lg:grid-cols-[1.2fr_1fr] lg:items-center">
-              <Reveal>
-                <span className="eyebrow">{translate(locale, "about.title")}</span>
-                <h2 className="mt-4 text-3xl font-semibold leading-tight sm:text-4xl lg:text-5xl">
-                  {locale === "ur"
-                    ? "لاہور کے باورچی خانے سے، آپ کے باورچی خانے تک"
-                    : "From Lahore's kitchens to yours"}
-                </h2>
-                <p className="mt-5 max-w-xl text-base leading-relaxed text-earth-600">
-                  {translate(locale, "about.body")}
-                </p>
-                <Link
-                  href="/about"
-                  className="btn btn-secondary mt-8 px-6 py-3 text-sm"
-                >
-                  {translate(locale, "nav.about")}
-                </Link>
-              </Reveal>
-
-              <Reveal delay={120}>
-                <ul className="space-y-5">
-                  {(
-                    [
-                      "home.storyPoint1",
-                      "home.storyPoint2",
-                      "home.storyPoint3",
-                    ] as const
-                  ).map((key) => (
-                    <li key={key} className="flex gap-3">
-                      <span
-                        className="mt-1 h-2.5 w-2.5 shrink-0 rounded-full bg-gold-400"
-                        aria-hidden="true"
-                      />
-                      <p className="text-sm leading-relaxed text-earth-600">
-                        {translate(locale, key)}
-                      </p>
-                    </li>
-                  ))}
-                </ul>
-              </Reveal>
-            </div>
-          </div>
-        </div>
+        <PantryShelf shelves={shelves} />
       </Section>
 
-      {/* Kitchen essentials */}
-      {essentials.length > 0 && (
-        <Section className="pt-0">
-          <div className="shell">
-            <div className="core grid gap-8 p-8 lg:grid-cols-[1fr_1.4fr] lg:items-center lg:p-12">
-              <Reveal>
-                <span className="eyebrow">{translate(locale, "home.essentials")}</span>
-                <h2 className="mt-4 text-3xl font-semibold leading-tight sm:text-4xl">
-                  {translate(locale, "home.essentialsSubtitle")}
-                </h2>
-                <Link
-                  href="/shop"
-                  className="btn btn-secondary mt-8 px-6 py-3 text-sm"
-                >
-                  {translate(locale, "nav.shop")}
-                </Link>
-              </Reveal>
-              <div className="grid grid-cols-2 gap-4">
-                {essentials.map((product) => (
-                  <Link key={product.id} href={`/product/${product.handle}`} className="shell">
-                    <div className="core overflow-hidden">
-                      <ProductVisual
-                        title={product.title}
-                        titleUr={product.titleUr}
-                        category={product.category}
-                        locale={locale}
-                        className="aspect-square"
-                      />
-                      <p className="p-3 text-xs font-medium text-earth-700">
-                        {productTitle(product.title, product.titleUr, locale)}
-                      </p>
-                    </div>
-                  </Link>
-                ))}
-              </div>
-            </div>
-          </div>
-        </Section>
-      )}
+      {story.length > 0 && <Storytelling products={story} locale={locale} />}
 
-      {/* WhatsApp CTA */}
-      <Section>
-        <div className="shell">
-          <div className="core grain relative overflow-hidden px-8 py-14 text-center lg:py-20">
-            <div
-              className="pointer-events-none absolute inset-0 opacity-30"
-              style={{
-                background:
-                  "radial-gradient(circle at 50% 0%, rgba(200,155,60,0.35), transparent 60%)",
-              }}
-            />
-            <h2 className="relative mx-auto max-w-2xl text-3xl font-semibold leading-tight sm:text-4xl lg:text-5xl">
-              {translate(locale, "home.whatsappTitle")}
+      <WhatsAppScene locale={locale} />
+
+      <Section className="pt-0">
+        <div className="stage">
+          <div className="core grain relative overflow-hidden p-8 text-center sm:p-14">
+            <h2 className="display-section mx-auto max-w-2xl text-4xl sm:text-5xl">
+              {translate(locale, "home.collectionsTitle")}
             </h2>
-            <p className="relative mx-auto mt-5 max-w-xl text-base leading-relaxed text-earth-600">
-              {translate(locale, "home.whatsappBody")}
+            <p className="mx-auto mt-5 max-w-xl text-sm leading-relaxed text-ink-600 sm:text-base">
+              {translate(locale, "home.collectionsSubtitle")}
             </p>
-            <div className="relative mt-9 flex flex-wrap items-center justify-center gap-3">
-              <Link
-                href="/cart"
-                className="btn btn-primary px-7 py-3 text-sm"
-              >
-                {translate(locale, "home.whatsappCta")}
-              </Link>
-              <Link href="/shop" className="btn btn-ghost px-7 py-3 text-sm">
+            <div className="mt-9 flex flex-wrap items-center justify-center gap-3">
+              <Link href="/shop" className="btn btn-primary px-7 py-3 text-sm">
                 {translate(locale, "nav.shop")}
               </Link>
+              <Link href="/order" className="btn btn-ghost px-7 py-3 text-sm">
+                {translate(locale, "order.title")}
+              </Link>
             </div>
-            <ol className="relative mx-auto mt-12 grid max-w-3xl gap-4 text-start sm:grid-cols-3">
-              {(
-                [
-                  "home.steps1",
-                  "home.steps2",
-                  "home.steps3",
-                ] as const
-              ).map((key, index) => (
-                <li key={key} className="flex gap-3">
-                  <span className="font-display text-xl font-semibold text-chili-700">
-                    {index + 1}
-                  </span>
-                  <p className="text-sm leading-relaxed text-earth-600">
-                    {translate(locale, key)}
-                  </p>
-                </li>
-              ))}
-            </ol>
           </div>
         </div>
       </Section>

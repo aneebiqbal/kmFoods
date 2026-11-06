@@ -9,14 +9,16 @@ import { cookies } from "next/headers";
 import { DEFAULT_LOCALE, LOCALES, LOCALE_COOKIE, type Locale } from "@kmfoods/shared";
 import { LanguageProvider } from "@/i18n/language-context";
 import { siteMetadata } from "@/lib/seo";
-import { organizationJsonLd } from "@/lib/structured-data";
-import { Footer, Header } from "@/components/chrome";
+import { listCategories } from "@/lib/products";
 import { AnnouncementBar } from "@/components/announcement-bar";
+import { Header } from "@/components/chrome";
+import Footer from "@/components/footer";
 import "./globals.css";
 
 const fraunces = Fraunces({
   subsets: ["latin", "latin-ext"],
   variable: "--font-fraunces",
+  axes: ["opsz"],
   display: "swap",
 });
 const jakarta = Plus_Jakarta_Sans({
@@ -57,6 +59,14 @@ export default async function RootLayout({
   children: React.ReactNode;
 }) {
   const locale = await getLocale();
+  let categories: Array<{ id: string; name: string; handle: string }> = [];
+
+  try {
+    categories = await listCategories();
+  } catch {
+    // The header renders without a category menu; the rest of the page works.
+  }
+
   return (
     <html lang={locale} dir={locale === "ur" ? "rtl" : "ltr"}>
       <body
@@ -65,18 +75,14 @@ export default async function RootLayout({
         <a href="#main-content" className="skip-link">
           Skip to content
         </a>
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{
-            __html: JSON.stringify(organizationJsonLd()),
-          }}
-        />
         <LanguageProvider locale={locale}>
           <div className="flex min-h-[100dvh] flex-col">
             <AnnouncementBar />
-            <Header />
-            <main id="main-content" className="flex-1">{children}</main>
-            <Footer />
+            <Header categories={categories} />
+            <main id="main-content" className="flex-1">
+              {children}
+            </main>
+            <Footer categories={categories} />
           </div>
         </LanguageProvider>
       </body>

@@ -90,11 +90,11 @@ export default async function ShopPage({
           <h1 className="mt-4 text-4xl font-semibold sm:text-5xl">
             {translate(locale, "shop.title")}
           </h1>
-          <p className="mt-3 text-earth-600">
+          <p className="mt-3 text-ink-600">
             {translate(locale, "shop.subtitle")}
           </p>
         </div>
-        <p data-testid="result-count" className="text-sm text-earth-500">
+        <p data-testid="result-count" className="text-sm text-ink-500">
           {translate(locale, "shop.results", { count })}
         </p>
       </div>
