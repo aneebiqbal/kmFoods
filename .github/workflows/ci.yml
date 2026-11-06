@@ -1,0 +1,148 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  static:
+    name: Typecheck, lint and unit tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+      - run: npm run build:shared
+      - run: npm run typecheck
+      - run: npm run lint
+      - run: npm run test
+
+  backend:
+    name: Medusa backend
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:17-alpine
+        env:
+          POSTGRES_USER: kmfoods
+          POSTGRES_PASSWORD: kmfoods
+          POSTGRES_DB: kmfoods
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd "pg_isready -U kmfoods"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    env:
+      DATABASE_URL: postgresql://kmfoods:kmfoods@localhost:5432/kmfoods
+      JWT_SECRET: ci-secret
+      COOKIE_SECRET: ci-secret
+      REDIS_URL: redis://localhost:6379
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+      - run: npm run build:shared
+      - run: cd apps/backend && npm ci
+      - run: cd apps/backend && npx turbo lint --filter=@dtc/backend
+      - run: cd apps/backend/apps/backend && npx medusa db:migrate
+      - run: cd apps/backend/apps/backend && npx medusa exec ./src/scripts/import-catalog.ts
+      - run: cd apps/backend/apps/backend && npx medusa exec ./src/scripts/seed-delivery-areas.ts
+
+  storefront:
+    name: Storefront build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+      - run: npm run build:shared
+      - run: npm run build
+        env:
+          NEXT_PUBLIC_MEDUSA_BACKEND_URL: http://localhost:9000
+          NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY: ci-key
+
+  e2e:
+    name: End-to-end tests
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:17-alpine
+        env:
+          POSTGRES_USER: kmfoods
+          POSTGRES_PASSWORD: kmfoods
+          POSTGRES_DB: kmfoods
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd "pg_isready -U kmfoods"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    env:
+      DATABASE_URL: postgresql://kmfoods:kmfoods@localhost:5432/kmfoods
+      JWT_SECRET: ci-secret
+      COOKIE_SECRET: ci-secret
+      STORE_CORS: http://localhost:3000
+      ADMIN_CORS: http://localhost:3000
+      AUTH_CORS: http://localhost:3000
+      WHATSAPP_BUSINESS_NUMBER: 923001234567
+      E2E_BASE_URL: http://localhost:3000
+      E2E_BACKEND_URL: http://localhost:9000
+      E2E_ADMIN_EMAIL: admin@kmfoods.local
+      E2E_ADMIN_PASSWORD: ci-admin-password
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+      - run: npm run build:shared
+
+      - name: Backend
+        run: |
+          cd apps/backend && npm ci
+          cd apps/backend/apps/backend
+          npx medusa db:migrate
+          npx medusa exec ./src/scripts/import-catalog.ts
+          npx medusa exec ./src/scripts/seed-delivery-areas.ts
+          npx medusa user -e "$E2E_ADMIN_EMAIL" -p "$E2E_ADMIN_PASSWORD"
+          npx medusa start &
+          sleep 20
+
+      - name: Storefront
+        run: |
+          cd apps/storefront
+          echo "NEXT_PUBLIC_MEDUSA_BACKEND_URL=http://localhost:9000" > .env.local
+          echo "NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY=$(psql "$DATABASE_URL" -tAc "select token from api_key where type='publishable' limit 1")" >> .env.local
+          npm run build
+          npm run start &
+          sleep 10
+
+      - name: Playwright
+        run: |
+          cd apps/storefront
+          npx playwright install --with-deps chromium
+          npx playwright test

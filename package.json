@@ -1,0 +1,30 @@
+{
+  "name": "kmfoods",
+  "version": "0.1.0",
+  "private": true,
+  "description": "KM Foods — Har Ghar Ka Zaiqa. Premium Pakistani spices, dry fruits, seeds and kitchen essentials.",
+  "workspaces": [
+    "apps/storefront",
+    "packages/*"
+  ],
+  "scripts": {
+    "build:shared": "npm run build -w packages/shared",
+    "dev:backend": "npm run start -w apps/backend -- --watch",
+    "dev:storefront": "npm run dev -w apps/storefront",
+    "build": "npm run build:shared && npm run build -w apps/storefront",
+    "import:catalog": "npm run import:catalog -w apps/backend",
+    "export:catalog": "npm run export:catalog -w apps/backend",
+    "extract:pdf": "node scripts/catalog/extract-pdf.mjs",
+    "test": "npm run test -w packages/shared && npm run test -w apps/storefront",
+    "test:e2e": "npm run test:e2e -w apps/storefront",
+    "lint": "npm run lint -w apps/storefront",
+    "typecheck": "npm run typecheck -w apps/storefront && npm run typecheck -w packages/shared"
+  },
+  "devDependencies": {
+    "pdf-parse": "1.1.1",
+    "tsx": "4.23.15"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

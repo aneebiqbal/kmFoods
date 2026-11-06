@@ -1,0 +1,63 @@
+# Local services for KM Foods.
+#
+# PostgreSQL and Redis are required by the Medusa backend. The backend and
+# storefront themselves are meant to run on the host (npm run dev) so that hot
+# reload works; containerising them is a deployment decision.
+#
+#   docker compose up -d
+#
+services:
+  postgres:
+    image: postgres:17-alpine
+    container_name: kmfoods-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-kmfoods}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-kmfoods}
+      POSTGRES_DB: ${POSTGRES_DB:-kmfoods}
+    ports:
+      - "${POSTGRES_PORT:-5432}:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-kmfoods} -d ${POSTGRES_DB:-kmfoods}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    container_name: kmfoods-redis
+    restart: unless-stopped
+    command: redis-server --appendonly yes
+    ports:
+      - "${REDIS_PORT:-6379}:6379"
+    volumes:
+      - redisdata:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Optional: MinIO for local S3-compatible product image storage.
+  # Enable the medusa file-s3 provider with these credentials if used.
+  minio:
+    image: minio/minio:latest
+    container_name: kmfoods-minio
+    profiles: ["storage"]
+    restart: unless-stopped
+    command: server /data --console-address ":9001"
+    environment:
+      MINIO_ROOT_USER: ${MINIO_USER:-kmfoods}
+      MINIO_ROOT_PASSWORD: ${MINIO_PASSWORD:-kmfoods-secret}
+    ports:
+      - "${MINIO_PORT:-9002}:9000"
+      - "${MINIO_CONSOLE_PORT:-9001}:9001"
+    volumes:
+      - miniodata:/data
+
+volumes:
+  pgdata:
+  redisdata:
+  miniodata:
