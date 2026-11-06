@@ -1,6 +1,7 @@
 import { cookies } from "next/headers";
 import { sdk } from "./medusa";
-import type { CartLine, StoreCart } from "./types";
+import { toStoreCart, type MedusaCart } from "./cart-map";
+import type { StoreCart } from "./types";
 
 export const CART_COOKIE = "km_cart_id";
 const CART_MAX_AGE_SECONDS = 60 * 60 * 24 * 30;
@@ -14,51 +15,11 @@ const CART_FIELDS = [
   "items.quantity",
   "items.unit_price",
   "items.title",
-  "items.variant_id",
-  "items.variant.title",
   "items.thumbnail",
-  "items.variant.product.handle",
+  "items.variant_id",
+  "*items.variant",
+  "*items.product",
 ].join(",");
-
-type MedusaCartItem = {
-  id: string;
-  quantity: number;
-  unit_price: number;
-  title?: string | null;
-  variant_id?: string | null;
-  thumbnail?: string | null;
-  variant?: { title?: string | null; product?: { handle?: string | null } | null } | null;
-};
-
-type MedusaCart = {
-  id: string;
-  subtotal?: number | null;
-  total?: number | null;
-  currency_code?: string | null;
-  items?: MedusaCartItem[] | null;
-};
-
-export function toStoreCart(cart: MedusaCart): StoreCart {
-  const items: CartLine[] = (cart.items ?? []).map((item) => ({
-    id: item.id,
-    variantId: item.variant_id ?? "",
-    title: item.title ?? item.variant?.title ?? "Item",
-    variantTitle: item.variant?.title ?? "",
-    quantity: item.quantity,
-    unitPrice: item.unit_price,
-    thumbnail: item.thumbnail ?? null,
-    productHandle: item.variant?.product?.handle ?? "",
-  }));
-
-  return {
-    id: cart.id,
-    items,
-    subtotal: cart.subtotal ?? 0,
-    total: cart.total ?? 0,
-    currencyCode: cart.currency_code ?? "pkr",
-    itemCount: items.reduce((sum, item) => sum + item.quantity, 0),
-  };
-}
 
 /** Read-only cart lookup for server components. */
 export async function getCartId(): Promise<string | null> {

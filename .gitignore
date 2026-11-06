@@ -17,6 +17,7 @@ test-results/
 blob-report/
 .playwright
 apps/backend/admin-credentials.txt
+*.tsbuildinfo
 apps/backend/uploads/
 apps/backend/.medusa/
 apps/backend/node_modules/
@@ -31,3 +32,4 @@ packages/shared/package-lock.json
 
 .next-prod/
 .next-test/
+.next-prod2/

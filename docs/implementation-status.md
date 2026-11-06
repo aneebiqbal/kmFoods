@@ -1,63 +1,67 @@
 # Implementation status
 
-Status as of the last verified run. "Verified" means a test or a manual check
-was executed, not that the code merely exists.
+Status after Phase 3 (UI/UX excellence and feature gap closure). "Verified"
+means a test or a browser inspection was executed.
 
-## Completed
+## Completed in Phase 3
 
 | Area | Status | Evidence |
 | --- | --- | --- |
-| Repository scaffolding | Done | npm workspaces + turbo; `npm install` succeeds |
-| Medusa backend | Done | `medusa db:migrate` succeeds; `/health` returns 200 |
-| Pakistan region, PKR store, Lahore shipping | Done | Verified via `GET /store/regions` |
-| Catalogue extraction from PDF | Done | 78 rows, 66 published, 12 draft, 0 errors |
-| Catalogue import (idempotent) | Done | Re-run reported `0 created, 78 updated` |
-| Catalogue export | Done | `export-catalog.ts` writes CSV |
-| Medusa Admin | Done | Admin user created; orders list returns pending orders |
-| Custom modules | Done | `deliveryArea`, `whatsappHandoff` migrated and queryable |
-| WhatsApp checkout workflow | Done | End-to-end verified: order + handoff + `wa.me` URL |
-| Order idempotency | Done | Re-submitting a cart returns the same reference |
-| Order status endpoint | Done | `GET /store/whatsapp-handoff/:reference` verified |
-| Admin handoff management | Done | Confirm status verified via API |
-| Admin delivery-area management | Done | Create/list/delete verified via Playwright |
-| Storefront pages | Done | Home, shop, product, cart, checkout, order, about, contact, 4 policies |
-| Cart persistence | Done | `httpOnly` cookie; verified in Playwright |
-| English / Urdu | Done | Dictionaries, RTL layout, Nastaliq/Naskh fonts |
-| PKR formatting | Done | Unit tested |
-| Pakistani phone validation | Done | Unit tested + storefront rejection test |
-| SEO basics | Done | Metadata, sitemap, robots, canonical paths, product JSON-LD |
-| Unit tests | Done | 48 passing (42 shared, 6 storefront) |
-| End-to-end tests | Done | 30 passing (14 catalogue, 8 checkout, 8 admin) |
-| Production build | Done | `medusa build` and `next build` both succeed; backend lint reports no issues |
+| Brand mark replaced with an original transparent SVG | Done | Header/footer/policies render sharp at all sizes |
+| Announcement bar | Done | Dismissible, localised, links to the delivery policy |
+| Homepage hero with layered product composition | Done | Real catalogue data, desktop + mobile screenshots |
+| Homepage brand story and 3-step ordering explainer | Done | Server-rendered, localised |
+| Product artwork system | Done | Category-coloured editorial treatment with the Urdu name; real thumbnail used when Medusa has one |
+| Shop category chips | Done | Plain anchors — work without JS and are crawlable |
+| Cart drawer | Done | Opens from the header, server-side totals, keyboard dismissible |
+| Mobile sticky purchase bar | Done | Verified in Playwright on a phone viewport |
+| Stock availability endpoint + UI | Done | `GET /store/stock`, "In stock"/"Out of stock" on the product page |
+| Admin UI: Delivery Areas | Done | `/app/delivery-areas` — list, create, edit, delete |
+| Admin UI: WhatsApp Orders | Done | `/app/whatsapp-handoffs` — filter, search by reference, confirm, order link |
+| Redis-backed rate limiting | Done | 10 requests/minute per IP; returns 429 after the limit; falls back to memory |
+| Abandoned-cart retention job | Done | `CART_RETENTION_DAYS=0` disables it; only incomplete carts are removed |
+| Privacy-safe request logging | Done | Method, path, status, duration — never bodies or headers |
+| Loading skeletons | Done | `app/shop/loading.tsx`, `app/product/[slug]/loading.tsx` |
+| Route error boundary | Done | `app/error.tsx` with retry and a shop link |
+| Accessibility: focus-visible, skip link, reduced motion | Done | CSS in `globals.css`, skip link in the root layout |
+| SEO: canonical URLs | Done | Home, shop (per category) and product pages |
+| SEO: generated Open Graph image | Done | `app/opengraph-image.tsx` |
+| Language switch applies immediately | Done | Full reload after setting the locale cookie (RSC refresh served a cached layout) |
 
-## Partial
+## Test totals
+
+| Suite | Count | Command |
+| --- | --- | --- |
+| Shared unit tests | 42 | `npm run test` |
+| Storefront unit tests | 10 | `npm run test` |
+| Playwright end-to-end | 39 passing, 3 mobile-only skips | `npx playwright test` |
+
+## Measured performance (documented conditions)
+
+Local production build (`next start`), Chromium, 390×844 viewport, **no network
+throttling**, cold first load:
+
+| Page | TTFB | LCP | CLS | JS transferred |
+| --- | --- | --- | --- | --- |
+| Home | 641 ms | 1732 ms | 0 | ~154 KB |
+| Shop | 11 ms | 112 ms | 0 | ~152 KB |
+| Product | 15 ms | 1360 ms | 0 | ~156 KB |
+
+These are not Lighthouse scores and no Lighthouse claim is made. The shop and
+product rows benefit from warm caches after the first navigation.
+
+## Still partial
 
 | Area | What is missing |
 | --- | --- |
-| Product imagery | No approved photography; cards use a designed colour treatment |
-| Delivery fees | Fees default to 0 and are confirmed on WhatsApp, not charged online |
-| Admin UI for custom modules | Delivery areas and handoffs are managed through authenticated API routes, not a custom admin screen |
-| Backend integration tests | The workflow is verified through HTTP end-to-end tests, not Jest integration tests |
-| Contact channel | WhatsApp only; no contact form or email service |
+| Product photography | Still the original artwork; no client photos |
+| Delivery fees | Still 0 and confirmed on WhatsApp |
+| Backend Jest integration tests | Workflow verified through HTTP and Playwright, not Jest |
+| Contact channel | WhatsApp only |
+| Lighthouse / Core Web Vitals audit | Not run; the numbers above are a browser performance-API sample |
+| Load testing | Not run |
 
-## Blocked (needs the business owner)
+## Blocked on the owner
 
-| Item | Why it is blocked |
-| --- | --- |
-| WhatsApp business number | Not approved; configuration boundary is implemented and documented |
-| Delivery charges | Not confirmed; the code deliberately defaults to 0 |
-| Return/refund policy | Draft only; must be approved by the owner |
-| Privacy policy, terms | Draft only; must be approved by the owner |
-| Product photography | Not supplied |
-| Best-seller selection | No sales data; the home page shows the first published products |
-
-## Not started (out of scope for this milestone)
-
-- AI chatbot or shopping assistant
-- Recipe engine
-- Subscriptions
-- Wholesale portal
-- Loyalty programme
-- Official WhatsApp Business Platform integration
-- Online payment capture
-- Multi-city delivery
+Unchanged from earlier phases: WhatsApp business number, delivery charges,
+policy page approval, product photography, best-seller selection.

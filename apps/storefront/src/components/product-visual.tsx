@@ -63,7 +63,7 @@ export function ProductVisual({
     >
       {/* Concentric ring motif — a restrained, original pattern. */}
       <svg
-        className="pointer-events-none absolute inset-0 h-full w-full opacity-25"
+        className="pointer-events-none absolute inset-0 h-full w-full opacity-12"
         viewBox="0 0 100 100"
         preserveAspectRatio="xMidYMid slice"
         aria-hidden="true"

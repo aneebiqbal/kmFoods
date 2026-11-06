@@ -1,10 +1,5 @@
 import Link from "next/link";
-import {
-  CATEGORY_LABELS,
-  translate,
-  type Category,
-  type Locale,
-} from "@kmfoods/shared";
+import { CATEGORY_LABELS, translate, type Category } from "@kmfoods/shared";
 import { getDefaultRegion, listCategories, listProducts } from "@/lib/products";
 import { getLocale } from "@/i18n/locale";
 import { productTitle } from "@/lib/format";

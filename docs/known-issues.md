@@ -1,80 +1,85 @@
 # Known issues and limitations
 
-Everything here is real and present in the code. None of it is hidden.
+## Resolved in Phase 3
 
-## Data and catalogue
+These were real problems and are now fixed:
 
-1. **12 products have no price.** The source price list leaves the price blank
-   for Kachri Powder, Brown Sugar, Gur, Lemon Grass, Munakka, Sundh, Licorice
-   Root, Kaju fry, White Kaju, Pistachio, Anjeer and Walnut Giri. They are
-   imported as draft products and are invisible in the shop. Publishing them
-   requires a price from the owner.
-2. **Category assignment is a rule of thumb.** Categories are derived from the
-   English product name. Some may be wrong for the owner's merchandising; they
-   can be changed per product in Medusa Admin.
-3. **No product images.** The cards use a designed colour treatment. Upload real
-   photography in the admin to replace it.
-4. **"Best sellers" is not sales data.** The home page currently shows the first
-   published products. There is no order history to rank by yet.
-5. **Urdu names are stored in `metadata`.** Editing them in the admin means
-   editing metadata, not a localized field.
+- **Brand mark was a cream-background JPEG.** Replaced with an original
+  transparent SVG at the correct aspect ratio.
+- **Product visuals were a flat gradient with a letter.** Now an editorial
+  treatment that carries the Urdu name, and it uses the real Medusa thumbnail
+  when one exists.
+- **Shop category chips were hidden behind a horizontal scroll.** They now wrap
+  and are plain anchors, so they work without JavaScript and are crawlable.
+- **No cart drawer, no sticky mobile purchase bar, no loading skeletons, no
+  route error boundary.** All added.
+- **No availability information.** `GET /store/stock` feeds an in-stock /
+  out-of-stock state on the product page.
+- **Custom modules had no admin UI.** Delivery areas and WhatsApp orders now
+  have Medusa admin screens, verified in a browser.
+- **Rate limiting was per-process memory.** Now Redis-backed with a memory
+  fallback, and it returns `429` with rate-limit headers.
+- **Abandoned carts accumulated with no policy.** A retention job exists and is
+  disabled unless `CART_RETENTION_DAYS` is set.
+- **Request logging did not exist.** Added a privacy-safe logger (no bodies, no
+  headers).
+- **No focus-visible style, no skip link, no reduced-motion handling.** Added.
+- **Language switch did not apply until a manual reload.** Fixed.
+- **No canonical URLs, no generated Open Graph image.** Added.
 
-## Checkout and ordering
+## Still open
 
-6. **Delivery fees are not charged.** Both the shipping option and the delivery
-   area rows default to `0`. The WhatsApp message asks staff to confirm the
-   charge. The owner must configure fees when they are decided.
-7. **Orders stay `payment_status = awaiting`.** No payment is captured online.
-   Staff must capture payment in the admin when the order is fulfilled, or the
-   order remains unpaid in Medusa's records.
-8. **Abandoned carts are never cleaned up.** Completed carts and abandoned carts
-   accumulate in PostgreSQL. There is no retention job.
-9. **The rate limiter is per-instance and in memory.** It resets on restart and
-   does not share state between backend instances. Upgrade to Redis before
-   running more than one instance.
-10. **Guest emails are synthetic.** `guest-<cart_id>@kmfoods.local` is written on
-    orders where the customer gave no email address.
-11. **No online payment provider.** Only the system provider (authorize without
-    capture) is configured.
+### Data and catalogue
 
-## Storefront
+1. **12 products have no price** and are drafts. Publishing them needs a price
+   from the owner.
+2. **Category assignment is a rule of thumb** and can be changed per product.
+3. **No product images** — the artwork is a placeholder, not a photograph.
+4. **"Best sellers" is not sales data**; the home page shows the first published
+   products.
+5. **Urdu names live in `metadata`**, so editing them means editing metadata.
 
-12. **Search is server-side and case-insensitive but basic.** It uses Medusa's
-    `q` filter; there is no typo tolerance or faceted search in the storefront.
-13. **Sorting happens in the browser.** With 78 products this is fine; with
-    thousands it should move to the server.
-14. **The storefront port defaults to 3000.** If another service occupies it,
-    start with `PORT=3001 npm run dev`.
-15. **Policy pages are drafts.** Delivery, returns, privacy and terms are
-    placeholders pending owner approval, and the footer says so.
-16. **No contact form.** Only WhatsApp is offered, because no mail service is
-    configured.
+### Checkout and ordering
 
-## Backend and infrastructure
+6. **Delivery fees are not charged online.** They stay `0` until the owner
+   configures them.
+7. **Orders stay `payment_status = awaiting`.** No payment is captured.
+8. **Guest emails are synthetic** (`guest-<cart_id>@kmfoods.local`).
+9. **No online payment provider.** Only the system provider is configured.
+10. **The cart retention job is off by default.** Set `CART_RETENTION_DAYS` to
+    enable it.
 
-17. **Local development uses the in-memory event bus and lock.** Medusa logs a
-    warning. Use Redis for anything beyond a single local instance.
-18. **Medusa's search index fills on application start.** Immediately after a
-    fresh `db:migrate`, product events can log "no active version yet" until the
-    app has booted once. Starting the backend clears it.
-19. **`next/font/google` needs network access at build time.** A fully offline
-    build requires self-hosted font files.
-20. **No automated dependency vulnerability gate in CI yet.** Run `npm audit`
-    before launch.
+### Storefront
 
-## Security
+11. **Search is server-side and basic** — no typo tolerance or facets.
+12. **Sorting happens in the browser.** Fine at 78 products.
+13. **Policy pages are drafts** and the footer says so.
+14. **No contact form** — WhatsApp only, because no mail service is configured.
+15. **`next/font/google` needs network at build time.** Self-host the fonts for
+    fully offline builds.
 
-21. **The publishable API key is public by design.** It only grants store access.
-22. **Admin routes rely on Medusa's authentication.** RBAC policies are only
-    enforced when the RBAC module is enabled; the custom admin routes are
-    guarded by authentication, not by fine-grained permissions.
-23. **Logs should be reviewed before production.** Medusa's logger is structured,
-    but no log-scrubbing policy for customer data has been applied beyond not
-    logging request bodies.
+### Backend and infrastructure
 
-## Testing
+16. **Local development uses the in-memory event bus and lock.** Use Redis for
+    more than one instance.
+17. **The search index fills on application start.** A fresh migrate logs
+    "no active version" until the app boots once.
+18. **Admin routes are guarded by authentication, not fine-grained RBAC
+    policies.** The custom routes ship without a `permissions` declaration, so
+    any authenticated admin can manage delivery areas and handoffs.
 
-24. **Admin tests skip without credentials.** Set `E2E_ADMIN_EMAIL` and
-    `E2E_ADMIN_PASSWORD` to run them.
-25. **No load testing or Lighthouse measurement.** Performance claims are not
-    made anywhere in this repository.
+### Security
+
+19. **The publishable API key is public by design** and grants store access only.
+20. **No log-scrubbing pipeline** beyond not logging bodies or headers.
+21. **No dependency-vulnerability gate in CI yet.** Run `npm audit` before launch.
+
+### Testing
+
+22. **Admin API tests skip without credentials.** Set `E2E_ADMIN_EMAIL` and
+    `E2E_ADMIN_PASSWORD`.
+23. **No Jest integration tests for the backend workflow.**
+24. **No Lighthouse or load testing.** The performance numbers in
+    `docs/implementation-status.md` are a browser performance-API sample under
+    documented local conditions.
+25. **The CI workflow has never run on a runner.**

@@ -9,7 +9,8 @@ const CUSTOMER = {
 };
 
 test.describe("mobile purchase experience", () => {
-  test("a sticky purchase bar is available on phones", async ({ page }) => {
+  test("a sticky purchase bar is available on phones", async ({ page, isMobile }) => {
+    test.skip(!isMobile, "the sticky bar is a mobile-only pattern");
     await page.goto("/product/red-chili-powder");
     const bar = page.getByRole("button", {
       name: /Add Red Chili Powder to cart/i,
@@ -20,7 +21,9 @@ test.describe("mobile purchase experience", () => {
 
   test("the sticky bar adds the selected pack size to the cart", async ({
     page,
+    isMobile,
   }) => {
+    test.skip(!isMobile, "the sticky bar is a mobile-only pattern");
     await page.goto("/product/red-chili-powder");
     const bar = page.getByRole("button", {
       name: /Add Red Chili Powder to cart/i,
@@ -28,15 +31,17 @@ test.describe("mobile purchase experience", () => {
     await bar.click();
     await expect(page.getByText("Added to your cart.").first()).toBeVisible();
 
-    // The cart page shows the item with the selected variant.
+    // The cart page shows the item with its pack size and quantity.
     await page.goto("/cart");
     await expect(page.getByText("Red Chili Powder").first()).toBeVisible();
-    await expect(page.getByText("100g").first()).toBeVisible();
+    await expect(page.getByText(/100g/)).toBeVisible();
   });
 
   test("the cart drawer shows the current cart without leaving the page", async ({
     page,
+    isMobile,
   }) => {
+    test.skip(!isMobile, "the drawer is exercised on a phone-sized viewport");
     await page.goto("/product/turmeric");
     await page.getByRole("button", { name: "Add to cart" }).first().click();
     await expect(page.getByText("Added to your cart.").first()).toBeVisible();
@@ -45,7 +50,7 @@ test.describe("mobile purchase experience", () => {
     const dialog = page.getByRole("dialog", { name: "Cart" });
     await expect(dialog).toBeVisible();
     await expect(dialog.getByText("Turmeric").first()).toBeVisible();
-    await expect(dialog.getByText(/Rs 80/)).toBeVisible();
+    await expect(dialog.getByText(/Rs 80/).first()).toBeVisible();
   });
 
   test("availability is shown on the product page", async ({ page }) => {

@@ -125,3 +125,49 @@ placeholder that pretends to send.
 
 **Cost.** Customers cannot send an email from the site. Acceptable while WhatsApp
 is the primary channel.
+
+## 11. Phase 3: plain anchors for category filtering
+
+**Decision.** Category chips are `<a href="/shop?category=...">`, not Next `Link`
+components.
+
+**Why.** Inside a client component on a phone-sized viewport, the `Link` click
+handed off to the client router and the URL never updated. A plain anchor works
+with and without JavaScript, is crawlable, and removed the flakiness.
+
+**Cost.** A full page load instead of a client-side transition for category
+filtering. Acceptable for a catalogue page.
+
+## 12. Phase 3: direct server-action calls instead of `useActionState`
+
+**Decision.** Cart and checkout forms call the server action from a submit
+handler and store the result in local state.
+
+**Why.** With `useActionState`, the success message never appeared: the action
+ran (the cart was created) but the returned state was lost when the layout
+re-rendered. Calling the action directly applies the result immediately.
+
+**Cost.** A little more boilerplate than `useActionState`.
+
+## 13. Phase 3: artwork instead of placeholder boxes
+
+**Decision.** Products without photography render an original category-coloured
+treatment carrying the Urdu name; the real Medusa thumbnail is used when one
+exists.
+
+**Why.** No approved photography exists, and a flat gradient with a letter read
+as unfinished. The treatment is clearly graphic, never a fake photograph.
+
+**Cost.** It is still not product photography. The owner must supply real images
+for the site to feel like a photograph-led food brand.
+
+## 14. Phase 3: availability from a dedicated endpoint
+
+**Decision.** `GET /store/stock?variants=...` reads inventory levels directly.
+
+**Why.** Medusa's computed `variants.inventory_quantity` was `null` in the store
+product response, so the storefront could not show availability without a second
+source of truth.
+
+**Cost.** One extra request on the product page.
+

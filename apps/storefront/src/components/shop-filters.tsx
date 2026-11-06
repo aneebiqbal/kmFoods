@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useLanguage } from "@/i18n/language-context";
@@ -43,7 +42,7 @@ export function ShopFilters({
             event.preventDefault();
             navigate({ q: queryDraft });
           }}
-          className="flex min-w-0 flex-1 items-center gap-2"
+          className="flex min-w-0 flex-1 flex-col gap-2 sm:flex-row sm:items-center"
           role="search"
         >
           <div className="relative min-w-0 flex-1">
@@ -74,7 +73,10 @@ export function ShopFilters({
             />
           </div>
 
-          <button type="submit" className="btn btn-primary shrink-0 px-5 py-2.5 text-sm">
+          <button
+            type="submit"
+            className="btn btn-primary shrink-0 px-5 py-2.5 text-sm"
+          >
             {t("common.search")}
           </button>
         </form>
@@ -101,7 +103,7 @@ export function ShopFilters({
         role="group"
         aria-label={t("shop.category")}
       >
-        <Link
+        <a
           href="/shop"
           className={`shrink-0 rounded-full border px-4 py-1.5 text-xs font-semibold transition-colors ${
             !activeCategory
@@ -110,10 +112,10 @@ export function ShopFilters({
           }`}
         >
           {t("shop.all")}
-        </Link>
+        </a>
 
         {categories.map((category) => (
-          <Link
+          <a
             key={category.id}
             href={`/shop?category=${category.handle}`}
             aria-current={activeCategory === category.handle ? "true" : undefined}
@@ -124,7 +126,7 @@ export function ShopFilters({
             }`}
           >
             {category.name}
-          </Link>
+          </a>
         ))}
       </div>
     </div>

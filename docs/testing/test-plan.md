@@ -23,8 +23,18 @@
 ## End-to-end coverage
 
 `apps/storefront/e2e/` runs against a live storefront and a live Medusa backend.
-There are 30 tests: 14 catalogue, 8 checkout and 8 admin (the catalogue and
-checkout suites run on both desktop Chromium and a mobile device).
+There are 42 tests across four suites:
+
+| Suite | Covers |
+| --- | --- |
+| `catalog.spec.ts` | Homepage, shop listing, category filter, search, empty state, product page, draft products not published |
+| `checkout.spec.ts` | Add to cart, quantity update, pending order creation, WhatsApp URL contents, phone validation, empty cart |
+| `mobile.spec.ts` | Sticky purchase bar, drawer, availability display (mobile viewport only) |
+| `admin.spec.ts` | Admin API: orders, handoffs, authorization, delivery areas |
+| `admin-ui.spec.ts` | Admin screens in a real browser: delivery-area create/delete, handoff confirm |
+
+The catalogue and checkout suites run on desktop Chromium and a phone-sized
+viewport. Mobile-only tests skip themselves on desktop.
 
 ### `catalog.spec.ts`
 
@@ -88,7 +98,8 @@ The `wa.me` link is inspected as a string. No WhatsApp message is ever sent.
 
 ## What is not covered
 
-- Medusa Admin UI interactions (the admin is exercised through its API).
+- Medusa Admin UI interactions are covered by `admin-ui.spec.ts` for the custom
+  modules only; core Medusa screens are not automated.
 - Payment capture (no payment provider is configured).
 - Real WhatsApp delivery (no official API integration yet).
-- Load testing and Lighthouse measurement.
+- Lighthouse, load testing, and CI execution.
