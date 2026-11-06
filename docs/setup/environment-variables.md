@@ -25,8 +25,8 @@ number taken from the price list.
 
 | Variable | Required | Default | Purpose |
 | --- | --- | --- | --- |
-| `NEXT_PUBLIC_MEDUSA_BACKEND_URL` | yes | `http://localhost:9000` | Medusa API base URL |
-| `NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY` | yes | — | Publishable API key from the Medusa admin |
+| `NEXT_PUBLIC_MEDUSA_BACKEND_URL` | yes | `http://localhost:9000` | Medusa API base URL. **Never localhost in production** — see the Vercel guide |
+| `NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY` | yes | — | Publishable API key from Medusa Admin → Settings → Publishable API Keys |
 | `NEXT_PUBLIC_SITE_URL` | recommended | `http://localhost:3000` | Canonical origin, used for metadata and the sitemap |
 | `PORT` | no | `3000` | Port the storefront listens on |
 | `E2E_BASE_URL` | tests only | `http://localhost:3000` | Playwright base URL |

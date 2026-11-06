@@ -1,4 +1,4 @@
-import { sdk } from "./medusa";
+import { assertMedusaConfigured, sdk } from "./medusa";
 import type { StoreCategory, StoreProduct, StoreVariant } from "./types";
 
 const PRODUCT_FIELDS = [
@@ -74,6 +74,7 @@ export async function getDefaultRegion(): Promise<{
   id: string;
   currency_code: string;
 } | null> {
+  assertMedusaConfigured();
   const { regions } = await sdk.store.region.list({
     limit: 1,
     fields: "id,currency_code",
@@ -82,6 +83,7 @@ export async function getDefaultRegion(): Promise<{
 }
 
 export async function listCategories(): Promise<StoreCategory[]> {
+  assertMedusaConfigured();
   const { product_categories } = await sdk.store.category.list({
     limit: 100,
     fields: "id,name,handle",
@@ -105,6 +107,7 @@ export type ProductListQuery = {
 export async function listProducts(
   query: ProductListQuery
 ): Promise<{ products: StoreProduct[]; count: number }> {
+  assertMedusaConfigured();
   const response = await sdk.store.product.list({
     region_id: query.regionId,
     limit: query.limit ?? 50,
@@ -125,6 +128,7 @@ export async function getProductByHandle(
   handle: string,
   regionId: string
 ): Promise<StoreProduct | null> {
+  assertMedusaConfigured();
   const { products } = await listProducts({ regionId, handle, limit: 1 });
   return products[0] ?? null;
 }
@@ -134,6 +138,7 @@ export async function getRelatedProducts(
   regionId: string,
   limit = 4
 ): Promise<StoreProduct[]> {
+  assertMedusaConfigured();
   const { products } = await listProducts({
     regionId,
     categoryId: undefined,

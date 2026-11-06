@@ -33,3 +33,4 @@ packages/shared/package-lock.json
 .next-prod/
 .next-test/
 .next-prod2/
+.next-vcel/

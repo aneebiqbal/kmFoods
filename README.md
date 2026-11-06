@@ -77,6 +77,9 @@ cd ../storefront && npm run dev       # http://localhost:3000
 See [docs/setup/local-development.md](docs/setup/local-development.md) for the
 full walkthrough and troubleshooting.
 
+Deploying to Vercel with Cloudflare DNS? See
+[docs/deployment/vercel-cloudflare.md](docs/deployment/vercel-cloudflare.md).
+
 ## Scripts
 
 | Command | Purpose |
