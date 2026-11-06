@@ -34,3 +34,4 @@ packages/shared/package-lock.json
 .next-test/
 .next-prod2/
 .next-vcel/
+.next-clean/

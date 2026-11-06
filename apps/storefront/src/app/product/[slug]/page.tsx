@@ -11,7 +11,7 @@ import { getLocale } from "@/i18n/locale";
 import { brandWithLogo, priceWithCurrency } from "@/lib/structured-data";
 import { ProductCard, ProductMedia } from "@/components/product-card";
 import { ProductPurchase, StickyPurchaseBar } from "@/components/product-purchase";
-import { Reveal, Section } from "@/components/ui";
+import { CatalogueUnavailable, Reveal, Section } from "@/components/ui";
 
 export const dynamic = "force-dynamic";
 
@@ -50,7 +50,13 @@ export default async function ProductPage({
   const locale = await getLocale();
   const region = await getDefaultRegion();
 
-  if (!region) notFound();
+  if (!region) {
+    return (
+      <Section>
+        <CatalogueUnavailable />
+      </Section>
+    );
+  }
 
   const product = await getProductByHandle(slug, region.id);
   if (!product || product.status !== "published") notFound();

@@ -99,6 +99,30 @@ export function SectionHeading({
   );
 }
 
+export function CatalogueUnavailable({ message }: { message?: string }) {
+  return (
+    <div className="stage">
+      <div className="core grain relative overflow-hidden px-8 py-16 text-center">
+        <span className="eyebrow mx-auto">KM Foods</span>
+        <h2 className="mt-5 text-2xl font-semibold text-ink-900 sm:text-3xl">
+          The catalogue is unavailable right now
+        </h2>
+        <p className="mx-auto mt-3 max-w-md text-sm leading-relaxed text-ink-600">
+          {message ??
+            "We could not reach the store backend. Nothing is wrong with your connection — please try again in a moment."}
+        </p>
+        <button
+          type="button"
+          onClick={() => window.location.reload()}
+          className="btn btn-primary mt-7 px-6 py-3 text-sm"
+        >
+          Retry
+        </button>
+      </div>
+    </div>
+  );
+}
+
 export function ProductSkeleton() {
   return (
     <div className="shell" aria-hidden="true">

@@ -3,7 +3,7 @@ import { translate } from "@kmfoods/shared";
 import { getDefaultRegion, listCategories, listProducts } from "@/lib/products";
 import { getLocale } from "@/i18n/locale";
 import { ProductCard } from "@/components/product-card";
-import { EmptyState, Reveal, Section } from "@/components/ui";
+import { CatalogueUnavailable, EmptyState, Reveal, Section } from "@/components/ui";
 import { ShopFilters } from "@/components/shop-filters";
 
 export const dynamic = "force-dynamic";
@@ -79,6 +79,22 @@ export default async function ShopPage({
         categoryId: activeCategory?.id,
       })
     : { products: [], count: 0 };
+
+  if (!region) {
+    return (
+      <Section>
+        <div className="max-w-xl">
+          <span className="eyebrow">{translate(locale, "common.tagline")}</span>
+          <h1 className="mt-4 text-4xl font-semibold sm:text-5xl">
+            {translate(locale, "shop.title")}
+          </h1>
+        </div>
+        <div className="mt-10">
+          <CatalogueUnavailable />
+        </div>
+      </Section>
+    );
+  }
 
   const sorted = sortProducts(products, sort);
 

@@ -1,5 +1,4 @@
 import type { MetadataRoute } from "next";
-import { assertMedusaConfigured } from "@/lib/medusa";
 
 /**
  * Static routes are always listed. Product URLs are added when Medusa is
@@ -31,8 +30,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   }));
 
   try {
-    assertMedusaConfigured();
-
     // Imported dynamically so a configuration error surfaces inside this
     // try/catch instead of failing the module at build time.
     const { getDefaultRegion, listProducts } = await import("@/lib/products");

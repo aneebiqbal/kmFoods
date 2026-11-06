@@ -14,7 +14,12 @@ export const metadata = {
 export default async function CheckoutPage() {
   const locale = await getLocale();
   const cart = await getCart();
-  const delivery = await getDeliveryConfig();
+  const delivery = (await getDeliveryConfig()) ?? {
+    shipping_option_id: null,
+    shipping_option_name: null,
+    fee_pkr: 0,
+    areas: [],
+  };
 
   return (
     <Section>

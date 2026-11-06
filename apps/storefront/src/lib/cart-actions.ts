@@ -41,8 +41,16 @@ async function ensureCartId(): Promise<string> {
   return cart.id;
 }
 
-export async function getDeliveryConfig(): Promise<DeliveryConfig> {
-  return sdk.client.fetch<DeliveryConfig>("/store/delivery-config");
+/**
+ * Delivery configuration for checkout. Returns null when Medusa is
+ * unreachable so the page can render a clear message instead of a 500.
+ */
+export async function getDeliveryConfig(): Promise<DeliveryConfig | null> {
+  try {
+    return await sdk.client.fetch<DeliveryConfig>("/store/delivery-config");
+  } catch {
+    return null;
+  }
 }
 
 export async function addToCartAction(
@@ -143,7 +151,7 @@ export async function submitCheckoutAction(
     }
 
     const delivery = await getDeliveryConfig();
-    if (!delivery.shipping_option_id) {
+    if (!delivery?.shipping_option_id) {
       return {
         status: "error",
         message: "Delivery is not configured yet. Please contact us on WhatsApp.",

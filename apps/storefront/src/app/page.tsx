@@ -7,7 +7,7 @@ import { ProductCard } from "@/components/product-card";
 import { ProductVisual } from "@/components/product-visual";
 import { ProductMedia } from "@/components/product-card";
 import { PantryShelf, type Shelf } from "@/components/pantry-shelf";
-import { Reveal, Section, SectionHeading } from "@/components/ui";
+import { CatalogueUnavailable, Reveal, Section, SectionHeading } from "@/components/ui";
 import type { StoreProduct } from "@/lib/types";
 
 export const dynamic = "force-dynamic";
@@ -391,7 +391,7 @@ export default async function HomePage() {
   if (!region) {
     return (
       <Section>
-        <p className="text-ink-600">{translate(locale, "common.error")}</p>
+        <CatalogueUnavailable />
       </Section>
     );
   }
