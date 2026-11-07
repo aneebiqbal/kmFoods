@@ -11,7 +11,7 @@ import { getLocale } from "@/i18n/locale";
 import { brandWithLogo, priceWithCurrency } from "@/lib/structured-data";
 import { ProductCard, ProductMedia } from "@/components/product-card";
 import { ProductPurchase, StickyPurchaseBar } from "@/components/product-purchase";
-import { CatalogueUnavailable, Reveal, Section } from "@/components/ui";
+import { CatalogueUnavailable, Section } from "@/components/ui";
 
 export const dynamic = "force-dynamic";
 
@@ -97,99 +97,79 @@ export default async function ProductPage({
         dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
       />
 
-      <nav className="mb-8 text-xs text-ink-500" aria-label="Breadcrumb">
-        <Link href="/" className="hover:text-paprika-700">
+      <nav className="mb-8 small" aria-label="Breadcrumb">
+        <Link href="/" className="link">
           {translate(locale, "nav.home")}
         </Link>
-        <span className="mx-2">/</span>
-        <Link href="/shop" className="hover:text-paprika-700">
+        <span className="mx-2 text-muted">/</span>
+        <Link href="/shop" className="link">
           {translate(locale, "nav.shop")}
         </Link>
-        <span className="mx-2">/</span>
-        <span className="text-ink-700">{product.title}</span>
+        {labels && (
+          <>
+            <span className="mx-2 text-muted">/</span>
+            <Link
+              href={`/shop?category=${product.category}`}
+              className="link"
+            >
+              {labels[locale]}
+            </Link>
+          </>
+        )}
+        <span className="mx-2 text-muted">/</span>
+        <span className="text-ink">{product.title}</span>
       </nav>
 
       <div className="grid gap-10 lg:grid-cols-2 lg:gap-16">
-        <Reveal>
-          <div className="shell">
-            <div className="core overflow-hidden">
-              <ProductMedia
-                product={product}
-                locale={locale}
-                className="aspect-square"
-                variantLabel={product.variants
-                  .map((variant) => variant.title)
-                  .join(" / ")}
-              />
-            </div>
+        <ProductMedia
+          product={product}
+          locale={locale}
+          className="aspect-square"
+          variantLabel={product.variants.map((variant) => variant.title).join(" / ")}
+        />
+
+        <div className="flex flex-col gap-6">
+          <div>
+            <h1 className="text-4xl leading-tight sm:text-5xl">
+              {locale === "ur" && product.titleUr ? product.titleUr : product.title}
+            </h1>
+            {product.titleUr && locale === "en" && (
+              <p className="lead mt-2">{product.titleUr}</p>
+            )}
           </div>
-        </Reveal>
 
-        <Reveal delay={120}>
-          <div className="flex flex-col gap-6">
-            {labels && <span className="eyebrow">{labels[locale]}</span>}
+          {product.variants.length > 0 && (
+            <div className="flex flex-wrap gap-3">
+              {product.variants.map((variant) => (
+                <div key={variant.id} className="border border-rule bg-paper-2 px-4 py-3">
+                  <p className="small">{variant.title}</p>
+                  <p className="price mt-1 text-lg">
+                    {variant.price === null ? "—" : priceWithCurrency(variant.price)}
+                  </p>
+                </div>
+              ))}
+            </div>
+          )}
 
+          {product.description && (
             <div>
-              <h1 className="text-4xl font-semibold leading-tight sm:text-5xl">
-                {locale === "ur" && product.titleUr
-                  ? product.titleUr
-                  : product.title}
-              </h1>
-              {product.titleUr && locale === "en" && (
-                <p className="mt-2 text-lg text-ink-500">{product.titleUr}</p>
-              )}
+              <h2 className="label">{translate(locale, "product.description")}</h2>
+              <p className="mt-3 leading-relaxed text-ink-2">{product.description}</p>
             </div>
+          )}
 
-            {product.variants.length > 0 && (
-              <div className="flex flex-wrap gap-3">
-                {product.variants.map((variant) => (
-                  <div
-                    key={variant.id}
-                    className="rounded-2xl border border-ink-900/10 bg-bone-100 px-4 py-3"
-                  >
-                    <p className="text-[10px] uppercase tracking-[0.18em] text-ink-500">
-                      {variant.title}
-                    </p>
-                    <p className="mt-1 font-semibold text-ink-900">
-                      {variant.price === null
-                        ? "—"
-                        : priceWithCurrency(variant.price)}
-                    </p>
-                  </div>
-                ))}
-              </div>
-            )}
-
-            {product.description && (
-              <div>
-                <h2 className="text-xs font-semibold uppercase tracking-[0.18em] text-ink-500">
-                  {translate(locale, "product.description")}
-                </h2>
-                <p className="mt-3 leading-relaxed text-ink-600">
-                  {product.description}
-                </p>
-              </div>
-            )}
-
-            <div className="shell">
-              <div className="core p-5">
-                <ProductPurchase product={product} />
-              </div>
-            </div>
+          <div className="well p-5">
+            <ProductPurchase product={product} />
           </div>
-        </Reveal>
+        </div>
       </div>
 
       {related.length > 0 && (
         <div className="mt-24">
-          <h2 className="text-2xl font-semibold sm:text-3xl">
-            {translate(locale, "product.related")}
-          </h2>
+          <h2 className="text-2xl sm:text-3xl">{translate(locale, "product.related")}</h2>
           <div className="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
-            {related.map((item, index) => (
-              <Reveal key={item.id} delay={index * 70}>
-                <ProductCard product={item} locale={locale} />
-              </Reveal>
+            {related.map((item) => (
+              <ProductCard key={item.id} product={item} locale={locale} />
             ))}
           </div>
         </div>

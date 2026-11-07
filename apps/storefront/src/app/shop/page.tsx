@@ -3,7 +3,7 @@ import { translate } from "@kmfoods/shared";
 import { getDefaultRegion, listCategories, listProducts } from "@/lib/products";
 import { getLocale } from "@/i18n/locale";
 import { ProductCard } from "@/components/product-card";
-import { CatalogueUnavailable, EmptyState, Reveal, Section } from "@/components/ui";
+import { CatalogueUnavailable, EmptyState, Section } from "@/components/ui";
 import { ShopFilters } from "@/components/shop-filters";
 
 export const dynamic = "force-dynamic";
@@ -84,10 +84,7 @@ export default async function ShopPage({
     return (
       <Section>
         <div className="max-w-xl">
-          <span className="eyebrow">{translate(locale, "common.tagline")}</span>
-          <h1 className="mt-4 text-4xl font-semibold sm:text-5xl">
-            {translate(locale, "shop.title")}
-          </h1>
+          <h1>{translate(locale, "shop.title")}</h1>
         </div>
         <div className="mt-10">
           <CatalogueUnavailable />
@@ -102,15 +99,10 @@ export default async function ShopPage({
     <Section>
       <div className="flex flex-wrap items-end justify-between gap-6">
         <div className="max-w-xl">
-          <span className="eyebrow">{translate(locale, "common.tagline")}</span>
-          <h1 className="mt-4 text-4xl font-semibold sm:text-5xl">
-            {translate(locale, "shop.title")}
-          </h1>
-          <p className="mt-3 text-ink-600">
-            {translate(locale, "shop.subtitle")}
-          </p>
+          <h1>{translate(locale, "shop.title")}</h1>
+          <p className="lead mt-4">{translate(locale, "shop.subtitle")}</p>
         </div>
-        <p data-testid="result-count" className="text-sm text-ink-500">
+        <p data-testid="result-count" className="small">
           {translate(locale, "shop.results", { count })}
         </p>
       </div>
@@ -141,10 +133,8 @@ export default async function ShopPage({
         </div>
       ) : (
         <div className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-          {sorted.map((product, index) => (
-            <Reveal key={product.id} delay={(index % 4) * 60}>
-              <ProductCard product={product} locale={locale} />
-            </Reveal>
+          {sorted.map((product) => (
+            <ProductCard key={product.id} product={product} locale={locale} />
           ))}
         </div>
       )}

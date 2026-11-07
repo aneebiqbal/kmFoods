@@ -16,7 +16,7 @@ export function LanguageSwitcher() {
 
   return (
     <div
-      className="flex items-center gap-0.5 rounded-full border border-ink-900/10 bg-bone-50/70 p-0.5"
+      className="flex items-center gap-0.5 border border-rule bg-paper-2 p-0.5"
       role="group"
       aria-label="Language"
     >
@@ -26,16 +26,32 @@ export function LanguageSwitcher() {
           type="button"
           onClick={() => setLocale(code)}
           aria-pressed={locale === code}
-          className={`rounded-full px-2.5 py-1 text-[0.6875rem] font-semibold transition-colors duration-200 ${
-            locale === code
-              ? "bg-aubergine-700 text-bone-50"
-              : "text-ink-500 hover:bg-bone-200"
+          className={`rounded-pill px-2.5 py-1 text-xs font-medium transition-colors duration-[220ms] ${
+            locale === code ? "bg-ink text-paper" : "text-ink-2 hover:bg-paper"
           }`}
         >
           {LOCALE_LABELS[code]}
         </button>
       ))}
     </div>
+  );
+}
+
+function WhatsAppIcon() {
+  return (
+    <svg
+      width="16"
+      height="16"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.7"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+    >
+      <path d="M21 11.5a8.5 8.5 0 0 1-12.4 7.5L3 21l2-5.4A8.5 8.5 0 1 1 21 11.5Z" />
+    </svg>
   );
 }
 
@@ -77,41 +93,45 @@ export function Header({ categories }: { categories: Category[] }) {
     { key: "nav.contact" as const, href: "/contact" },
   ];
 
+  const navLink = (item: { key: "nav.shop" | "nav.about" | "nav.contact"; href: string }) => {
+    const active = pathname === item.href;
+    return (
+      <Link
+        key={item.href}
+        href={item.href}
+        aria-current={active ? "true" : undefined}
+        className={`tab ${active ? "text-ink" : "text-ink-2 hover:text-accent"}`}
+      >
+        {t(item.key)}
+      </Link>
+    );
+  };
+
   return (
     <>
       <header
-        className={`sticky top-0 z-40 transition-[background-color,box-shadow,backdrop-filter] duration-500 ${
-          scrolled
-            ? "border-b border-ink-900/8 bg-bone-100/85 shadow-[0_12px_40px_-24px_rgb(28_19_12/0.5)] backdrop-blur-xl"
-            : "border-b border-transparent bg-bone-100/40 backdrop-blur-sm"
+        className={`sticky top-0 z-sticky-nav border-b transition-[background-color,border-color] duration-[420ms] ${
+          scrolled ? "border-rule bg-paper/95 backdrop-blur-sm" : "border-transparent bg-paper"
         }`}
       >
-        {/* Desktop: three zones — discovery | brand | actions */}
-        <div className="mx-auto hidden max-w-[90rem] grid-cols-[1fr_auto_1fr] items-center gap-8 px-8 py-4 lg:grid">
+        <div className="container hidden grid-cols-[auto_1fr_auto] items-center gap-10 py-4 lg:grid">
+          <Link
+            href="/"
+            className="flex items-center gap-3"
+            aria-label={`${t("common.brand")} — ${t("common.tagline")}`}
+          >
+            <BrandLogo alt={t("common.brand")} className="h-10 w-auto" />
+          </Link>
+
           <nav className="flex items-center gap-7" aria-label="Main">
-            {nav.map((item) => {
-              const active = pathname === item.href;
-              return (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  className={`link-underline text-[0.8125rem] font-medium tracking-[0.02em] ${
-                    active ? "text-paprika-600" : "text-ink-600 hover:text-ink-900"
-                  }`}
-                >
-                  {t(item.key)}
-                </Link>
-              );
-            })}
+            {nav.map(navLink)}
 
             <div className="relative">
               <button
                 type="button"
                 onClick={() => setCategoriesOpen((value) => !value)}
                 aria-expanded={categoriesOpen}
-                className={`flex items-center gap-1.5 text-[0.8125rem] font-medium tracking-[0.02em] transition-colors ${
-                  categoriesOpen ? "text-paprika-600" : "text-ink-600 hover:text-ink-900"
-                }`}
+                className={`tab ${categoriesOpen ? "text-ink" : "text-ink-2 hover:text-accent"}`}
               >
                 {t("nav.categories")}
                 <svg
@@ -124,54 +144,39 @@ export function Header({ categories }: { categories: Category[] }) {
                   strokeLinecap="round"
                   strokeLinejoin="round"
                   aria-hidden="true"
-                  className={`transition-transform duration-300 ${categoriesOpen ? "rotate-180" : ""}`}
+                  className={`transition-transform duration-[220ms] ${categoriesOpen ? "rotate-180" : ""}`}
                 >
                   <path d="m6 9 6 6 6-6" />
                 </svg>
               </button>
 
               {categoriesOpen && (
-                <div className="absolute start-0 top-full z-50 w-64 pt-3">
-                  <div className="stage">
-                    <div className="core p-2">
-                      <ul className="divide-y divide-ink-900/5">
-                        {categories.map((category) => (
-                          <li key={category.id}>
-                            <Link
-                              href={`/shop?category=${category.handle}`}
-                              className="flex items-center justify-between gap-3 rounded-xl px-3 py-2.5 text-sm text-ink-700 transition-colors hover:bg-bone-200 hover:text-ink-900"
-                            >
-                              {category.name}
-                              <span className="text-[0.625rem] uppercase tracking-[0.18em] text-ink-500">
-                                {category.handle}
-                              </span>
-                            </Link>
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
+                <div className="absolute start-0 top-full z-dropdown w-72 pt-3">
+                  <div className="well p-2">
+                    <ul className="divide-y divide-rule">
+                      {categories.map((category) => (
+                        <li key={category.id}>
+                          <Link
+                            href={`/shop?category=${category.handle}`}
+                            className="flex items-center justify-between gap-3 px-3 py-2.5 text-sm text-ink-2 transition-colors hover:bg-paper hover:text-ink"
+                          >
+                            {category.name}
+                            <span className="small">{category.handle}</span>
+                          </Link>
+                        </li>
+                      ))}
+                    </ul>
                   </div>
                 </div>
               )}
             </div>
           </nav>
 
-          <Link
-            href="/"
-            className="flex flex-col items-center gap-1"
-            aria-label={`${t("common.brand")} — ${t("common.tagline")}`}
-          >
-            <BrandLogo alt={t("common.brand")} className="h-10 w-auto" />
-            <span className="text-[0.5625rem] uppercase tracking-[0.3em] text-paprika-600">
-              {t("common.tagline")}
-            </span>
-          </Link>
-
           <div className="flex items-center justify-end gap-2">
             <button
               type="button"
               onClick={() => setSearchOpen(true)}
-              className="btn btn-ghost px-3.5 py-2 text-[0.8125rem]"
+              className="btn btn-ghost px-3.5 text-sm"
               aria-label={t("common.search")}
             >
               <svg
@@ -191,12 +196,15 @@ export function Header({ categories }: { categories: Category[] }) {
               <span className="hidden xl:inline">{t("common.search")}</span>
             </button>
             <LanguageSwitcher />
+            <Link href="/contact" className="btn btn-ghost hidden px-3.5 text-sm lg:inline-flex">
+              <WhatsAppIcon />
+              <span className="hidden xl:inline">{t("contact.whatsapp")}</span>
+            </Link>
             <CartDrawer />
           </div>
         </div>
 
-        {/* Mobile: brand left, actions right */}
-        <div className="mx-auto flex max-w-[90rem] items-center justify-between gap-2 px-4 py-3 lg:hidden">
+        <div className="container flex items-center justify-between gap-2 py-3 lg:hidden">
           <Link
             href="/"
             className="flex items-center gap-2"
@@ -209,7 +217,7 @@ export function Header({ categories }: { categories: Category[] }) {
             <button
               type="button"
               onClick={() => setSearchOpen(true)}
-              className="flex h-10 w-10 items-center justify-center rounded-full border border-ink-900/10 bg-bone-50/70 text-ink-700"
+              className="flex h-10 w-10 items-center justify-center rounded-pill border border-rule bg-paper-2 text-ink"
               aria-label={t("common.search")}
             >
               <svg
@@ -233,7 +241,7 @@ export function Header({ categories }: { categories: Category[] }) {
               onClick={() => setMenuOpen((value) => !value)}
               aria-expanded={menuOpen}
               aria-label={t("common.menu")}
-              className="flex h-10 w-10 items-center justify-center rounded-full border border-ink-900/10 bg-bone-50/70 text-ink-700"
+              className="flex h-10 w-10 items-center justify-center rounded-pill border border-rule bg-paper-2 text-ink"
             >
               <svg
                 width="18"
@@ -258,33 +266,31 @@ export function Header({ categories }: { categories: Category[] }) {
           </div>
         </div>
 
-        {/* Mobile menu */}
         <div
-          className={`overflow-hidden border-t border-ink-900/8 bg-bone-100 transition-[max-height,opacity] duration-500 lg:hidden ${
-            menuOpen ? "max-h-[28rem] opacity-100" : "max-h-0 opacity-0"
+          className={`grid border-t border-rule bg-paper transition-[grid-template-rows,opacity] duration-[420ms] lg:hidden ${
+            menuOpen ? "[grid-template-rows:1fr] opacity-100" : "[grid-template-rows:0fr] opacity-0"
           }`}
         >
-          <nav className="mx-auto max-w-[90rem] space-y-1 px-4 py-4" aria-label="Mobile">
+          <div className="overflow-hidden">
+          <nav className="container space-y-1 py-4" aria-label="Mobile">
             {nav.map((item) => (
               <Link
                 key={item.href}
                 href={item.href}
                 onClick={() => setMenuOpen(false)}
-                className="block rounded-xl px-3 py-2.5 text-base font-medium text-ink-700 transition-colors hover:bg-bone-200"
+                className="block px-3 py-2.5 text-base font-medium text-ink-2 transition-colors hover:bg-paper-2 hover:text-ink"
               >
                 {t(item.key)}
               </Link>
             ))}
-            <p className="px-3 pb-1 pt-3 text-[0.625rem] uppercase tracking-[0.22em] text-ink-500">
-              {t("nav.categories")}
-            </p>
+            <p className="px-3 pb-1 pt-3 small">{t("nav.categories")}</p>
             <div className="grid grid-cols-2 gap-1.5 pb-2">
               {categories.map((category) => (
                 <Link
                   key={category.id}
                   href={`/shop?category=${category.handle}`}
                   onClick={() => setMenuOpen(false)}
-                  className="rounded-xl border border-ink-900/8 bg-bone-50 px-3 py-2.5 text-sm text-ink-700 transition-colors hover:border-ink-900/20"
+                  className="whitespace-nowrap border border-rule bg-paper-2 px-2 py-2 text-xs text-ink-2 transition-colors hover:border-ink hover:text-ink"
                 >
                   {category.name}
                 </Link>
@@ -293,7 +299,16 @@ export function Header({ categories }: { categories: Category[] }) {
             <div className="flex items-center justify-between px-3 pt-2">
               <LanguageSwitcher />
             </div>
+            <Link
+              href="/contact"
+              onClick={() => setMenuOpen(false)}
+              className="mt-2 flex items-center gap-2 px-3 py-2 text-sm font-medium text-ink"
+            >
+              <WhatsAppIcon />
+              {t("contact.whatsapp")}
+            </Link>
           </nav>
+          </div>
         </div>
       </header>
 

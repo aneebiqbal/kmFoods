@@ -27,22 +27,20 @@ function QuantityForm({ line }: { line: CartLine }) {
     <form onSubmit={handleSubmit} className="flex items-center gap-2">
       <input type="hidden" name="lineId" value={line.id} />
       <input type="hidden" name="quantity" value={quantity} />
-      <div className="inline-flex items-center rounded-full border border-ink-900/12">
+      <div className="inline-flex items-center border border-ink">
         <button
           type="button"
           onClick={() => setQuantity((value) => Math.max(0, value - 1))}
-          className="px-3 py-1.5 text-ink-700"
+          className="px-3 py-1.5 text-ink-2"
           aria-label="Decrease quantity"
         >
           −
         </button>
-        <span className="min-w-7 text-center text-sm font-semibold">
-          {quantity}
-        </span>
+        <span className="min-w-7 text-center text-sm font-medium text-ink">{quantity}</span>
         <button
           type="button"
           onClick={() => setQuantity((value) => Math.min(999, value + 1))}
-          className="px-3 py-1.5 text-ink-700"
+          className="px-3 py-1.5 text-ink-2"
           aria-label="Increase quantity"
         >
           +
@@ -51,12 +49,12 @@ function QuantityForm({ line }: { line: CartLine }) {
       <button
         type="submit"
         disabled={pending || quantity === line.quantity}
-        className="text-xs font-semibold text-paprika-700 disabled:opacity-40"
+        className="text-xs font-medium text-accent disabled:opacity-40"
       >
         {t("cart.update")}
       </button>
       {state.status === "error" && (
-        <span className="text-xs text-paprika-700">{state.message}</span>
+        <span className="text-xs text-error">{state.message}</span>
       )}
     </form>
   );
@@ -81,12 +79,12 @@ function RemoveForm({ line }: { line: CartLine }) {
       <button
         type="submit"
         disabled={pending}
-        className="text-xs font-semibold text-ink-500 underline-offset-2 hover:text-paprika-700 hover:underline"
+        className="text-xs font-medium text-ink-2 underline underline-offset-2 hover:text-accent"
       >
         {t("cart.remove")}
       </button>
       {state.status === "error" && (
-        <span className="ml-2 text-xs text-paprika-700">{state.message}</span>
+        <span className="ms-2 text-xs text-error">{state.message}</span>
       )}
     </form>
   );
@@ -96,38 +94,32 @@ export function CartLineItems({ lines }: { lines: CartLine[] }) {
   const { locale } = useLanguage();
 
   return (
-    <ul className="flex flex-col gap-4">
+    <ul className="divide-y divide-rule border-y border-rule">
       {lines.map((line) => (
-        <li key={line.id} className="shell">
-          <div className="core flex flex-wrap items-center gap-4 p-4">
-            <div className="h-20 w-20 shrink-0 overflow-hidden rounded-2xl">
-              <ProductVisual
-                title={line.title}
-                titleUr={null}
-                category={null}
-                className="h-full w-full"
-              />
-            </div>
+        <li key={line.id} className="flex flex-wrap items-center gap-4 py-4">
+          <div className="h-20 w-20 shrink-0 overflow-hidden border border-rule">
+            <ProductVisual
+              title={line.title}
+              titleUr={null}
+              locale={locale}
+              className="h-full w-full"
+            />
+          </div>
 
-            <div className="min-w-40 flex-1">
-              <Link
-                href={`/product/${line.productHandle}`}
-                className="text-sm font-semibold text-ink-900 hover:text-paprika-700"
-              >
-                {line.title}
-              </Link>
-              <p className="mt-0.5 text-xs text-ink-500">
-                {line.variantTitle}
-              </p>
-              <p className="mt-1 text-sm font-semibold text-ink-900">
-                {money(line.unitPrice, locale)}
-              </p>
-            </div>
+          <div className="min-w-40 flex-1">
+            <Link
+              href={`/product/${line.productHandle}`}
+              className="text-sm font-medium text-ink link"
+            >
+              {line.title}
+            </Link>
+            <p className="small mt-0.5">{line.variantTitle}</p>
+            <p className="price mt-1 text-base">{money(line.unitPrice, locale)}</p>
+          </div>
 
-            <div className="flex flex-col items-end gap-2">
-              <QuantityForm line={line} />
-              <RemoveForm line={line} />
-            </div>
+          <div className="flex flex-col items-end gap-2">
+            <QuantityForm line={line} />
+            <RemoveForm line={line} />
           </div>
         </li>
       ))}

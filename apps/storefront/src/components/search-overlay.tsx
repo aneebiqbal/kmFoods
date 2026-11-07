@@ -89,18 +89,17 @@ export function SearchOverlay({
 
   return (
     <BodyPortal>
-    <div
-      className="fixed inset-0 z-50 flex items-start justify-center bg-aubergine-900/55 px-4 pt-20 backdrop-blur-md sm:pt-28"
-      role="dialog"
-      aria-modal="true"
-      aria-label={t("common.search")}
-      onClick={onClose}
-    >
       <div
-        className="stage w-full max-w-2xl"
-        onClick={(event) => event.stopPropagation()}
+        className="fixed inset-0 z-modal flex items-start justify-center bg-ink/45 px-4 pt-20 sm:pt-28"
+        role="dialog"
+        aria-modal="true"
+        aria-label={t("common.search")}
+        onClick={onClose}
       >
-        <div className="core p-3 sm:p-5">
+        <div
+          className="w-full max-w-2xl border-2 border-ink bg-paper p-3 shadow-[10px_10px_0_var(--color-paper-3)] sm:p-5"
+          onClick={(event) => event.stopPropagation()}
+        >
           <form
             onSubmit={(event) => {
               event.preventDefault();
@@ -111,7 +110,7 @@ export function SearchOverlay({
               }
             }}
           >
-            <div className="flex items-center gap-3 border-b border-ink-900/10 pb-3">
+            <div className="flex items-center gap-3 border-b border-rule pb-3">
               <svg
                 width="20"
                 height="20"
@@ -121,7 +120,7 @@ export function SearchOverlay({
                 strokeWidth="1.7"
                 strokeLinecap="round"
                 strokeLinejoin="round"
-                className="shrink-0 text-paprika-600"
+                className="shrink-0 text-accent"
                 aria-hidden="true"
               >
                 <circle cx="11" cy="11" r="7" />
@@ -133,13 +132,13 @@ export function SearchOverlay({
                 value={query}
                 onChange={(event) => setQuery(event.target.value)}
                 placeholder={t("common.searchPlaceholder")}
-                className="w-full bg-transparent text-lg text-ink-900 outline-none placeholder:text-ink-500/70"
+                className="w-full bg-transparent text-lg text-ink outline-none placeholder:text-muted"
                 aria-label={t("common.search")}
               />
               <button
                 type="button"
                 onClick={onClose}
-                className="shrink-0 text-[0.625rem] font-semibold uppercase tracking-[0.2em] text-ink-500 transition-colors hover:text-ink-900"
+                className="shrink-0 text-sm font-medium text-ink-2 transition-colors hover:text-ink"
               >
                 {t("common.close")}
               </button>
@@ -151,10 +150,10 @@ export function SearchOverlay({
               <ul className="space-y-2" aria-hidden="true">
                 {Array.from({ length: 4 }).map((_, index) => (
                   <li key={index} className="flex animate-pulse items-center gap-3">
-                    <div className="h-14 w-14 rounded-2xl bg-bone-200" />
+                    <div className="h-14 w-14 border border-rule bg-paper-2" />
                     <div className="flex-1 space-y-2">
-                      <div className="h-3 w-2/3 rounded bg-bone-200" />
-                      <div className="h-3 w-1/3 rounded bg-bone-200" />
+                      <div className="h-3 w-2/3 rounded bg-paper-3" />
+                      <div className="h-3 w-1/3 rounded bg-paper-3" />
                     </div>
                   </li>
                 ))}
@@ -163,9 +162,7 @@ export function SearchOverlay({
 
             {!loading && query.trim().length < 2 && (
               <div className="py-6">
-                <p className="text-[0.625rem] uppercase tracking-[0.22em] text-ink-500">
-                  {t("nav.categories")}
-                </p>
+                <p className="small">{t("nav.categories")}</p>
                 <div className="mt-3 flex flex-wrap gap-2">
                   {categories.map((category) => (
                     <Link
@@ -182,38 +179,37 @@ export function SearchOverlay({
             )}
 
             {!loading && query.trim().length >= 2 && results.length === 0 && (
-              <p className="py-8 text-center text-sm text-ink-500">
+              <p className="py-8 text-center text-sm text-ink-2">
                 {error ?? t("shop.empty")}
               </p>
             )}
 
             {!loading && results.length > 0 && (
-              <ul className="divide-y divide-ink-900/6">
+              <ul className="divide-y divide-rule">
                 {results.map((product) => (
                   <li key={product.id}>
                     <Link
                       href={`/product/${product.handle}`}
                       onClick={onClose}
-                      className="flex items-center gap-3 py-2.5 transition-colors hover:bg-bone-200/60"
+                      className="flex items-center gap-3 py-2.5 transition-colors hover:bg-paper-2"
                     >
-                      <div className="h-14 w-14 shrink-0 overflow-hidden rounded-2xl">
+                      <div className="h-14 w-14 shrink-0 overflow-hidden border border-rule">
                         <ProductVisual
                           title={product.title}
                           titleUr={product.titleUr}
-                          category={product.category}
                           locale={locale}
                           className="h-full w-full"
                         />
                       </div>
                       <div className="min-w-0 flex-1">
-                        <p className="truncate text-sm font-semibold text-ink-900">
+                        <p className="truncate text-sm font-medium text-ink">
                           {productTitle(product.title, product.titleUr, locale)}
                         </p>
-                        <p className="text-xs text-ink-500">
+                        <p className="small">
                           {product.variants.map((variant) => variant.title).join(" / ")}
                         </p>
                       </div>
-                      <span className="price text-sm">
+                      <span className="price text-base">
                         {product.minPrice !== null ? money(product.minPrice, locale) : "—"}
                       </span>
                     </Link>
@@ -224,7 +220,6 @@ export function SearchOverlay({
           </div>
         </div>
       </div>
-    </div>
     </BodyPortal>
   );
 }

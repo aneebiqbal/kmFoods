@@ -48,9 +48,7 @@ export function ProductPurchase({ product }: { product: StoreProduct }) {
 
       {product.variants.length > 1 && (
         <fieldset>
-          <legend className="text-xs font-semibold uppercase tracking-[0.18em] text-ink-500">
-            {t("product.packSize")}
-          </legend>
+          <legend className="label">{t("product.packSize")}</legend>
           <div className="mt-3 flex flex-wrap gap-2">
             {product.variants.map((variant) => (
               <button
@@ -58,10 +56,10 @@ export function ProductPurchase({ product }: { product: StoreProduct }) {
                 type="button"
                 onClick={() => setVariantId(variant.id)}
                 aria-pressed={variantId === variant.id}
-                className={`rounded-full border px-4 py-2 text-sm font-semibold transition-colors duration-200 ${
+                className={`rounded-pill border px-4 py-2 text-sm font-medium transition-colors duration-[220ms] ${
                   variantId === variant.id
-                    ? "border-paprika-600 bg-paprika-600 text-bone-50"
-                    : "border-ink-900/12 bg-bone-50 text-ink-700 hover:border-ink-900/25"
+                    ? "border-ink bg-ink text-paper"
+                    : "border-rule bg-paper text-ink-2 hover:border-ink"
                 }`}
               >
                 {variant.title}
@@ -72,28 +70,23 @@ export function ProductPurchase({ product }: { product: StoreProduct }) {
       )}
 
       <div>
-        <label
-          htmlFor="quantity"
-          className="text-xs font-semibold uppercase tracking-[0.18em] text-ink-500"
-        >
+        <label htmlFor="quantity" className="label">
           {t("product.quantity")}
         </label>
-        <div className="mt-3 inline-flex items-center rounded-full border border-ink-900/12">
+        <div className="mt-3 inline-flex items-center border border-ink">
           <button
             type="button"
             onClick={() => setQuantity((value) => Math.max(1, value - 1))}
-            className="px-4 py-2 text-lg text-ink-700"
+            className="px-4 py-2 text-lg text-ink-2"
             aria-label="Decrease quantity"
           >
             −
           </button>
-          <span className="min-w-8 text-center text-sm font-semibold">
-            {quantity}
-          </span>
+          <span className="min-w-8 text-center text-sm font-medium text-ink">{quantity}</span>
           <button
             type="button"
             onClick={() => setQuantity((value) => Math.min(999, value + 1))}
-            className="px-4 py-2 text-lg text-ink-700"
+            className="px-4 py-2 text-lg text-ink-2"
             aria-label="Increase quantity"
           >
             +
@@ -101,7 +94,7 @@ export function ProductPurchase({ product }: { product: StoreProduct }) {
         </div>
       </div>
 
-      <p className="text-xs text-ink-500" role="status">
+      <p className="small" role="status">
         {stockLoading
           ? translate(locale, "common.loading")
           : outOfStock
@@ -115,12 +108,12 @@ export function ProductPurchase({ product }: { product: StoreProduct }) {
         <button
           type="submit"
           disabled={pending || !selected || outOfStock}
-          className="btn btn-primary flex-1 px-6 py-3 text-sm disabled:cursor-not-allowed disabled:opacity-60"
+          className="btn btn-primary flex-1 px-6 py-3 text-sm"
         >
           {pending ? t("common.loading") : t("product.addToCart")}
         </button>
         {selected?.price != null && (
-          <span className="text-lg font-semibold text-ink-900">
+          <span className="price text-xl">
             {money(selected.price * quantity, locale)}
           </span>
         )}
@@ -129,7 +122,7 @@ export function ProductPurchase({ product }: { product: StoreProduct }) {
       {state.status !== "idle" && (
         <p
           className={`text-sm ${
-            state.status === "success" ? "text-olive-600" : "text-paprika-700"
+            state.status === "success" ? "text-success" : "text-error"
           }`}
           role="status"
         >
@@ -162,19 +155,19 @@ export function StickyPurchaseBar({ product }: { product: StoreProduct }) {
   }
 
   return (
-    <div className="fixed inset-x-0 bottom-0 z-40 border-t border-ink-900/10 bg-bone-50/95 px-4 py-3 backdrop-blur-md lg:hidden">
+    <div className="fixed inset-x-0 bottom-0 z-raised border-t-2 border-ink bg-paper/95 px-4 py-3 backdrop-blur-sm lg:hidden">
       <form onSubmit={handleSubmit} className="flex items-center gap-3">
         <input type="hidden" name="variantId" value={variantId} />
         <input type="hidden" name="quantity" value={quantity} />
 
         <div className="min-w-0 flex-1">
           {product.variants.length > 1 ? (
-            <label className="block text-[10px] uppercase tracking-[0.16em] text-ink-500">
+            <label className="label">
               {t("product.packSize")}
               <select
                 value={variantId}
                 onChange={(event) => setVariantId(event.target.value)}
-                className="mt-0.5 w-full rounded-full border border-ink-900/12 bg-bone-50 px-2 py-1 text-xs font-semibold outline-none"
+                className="field mt-1 px-2 py-1.5 text-sm"
               >
                 {product.variants.map((variant) => (
                   <option key={variant.id} value={variant.id}>
@@ -185,31 +178,29 @@ export function StickyPurchaseBar({ product }: { product: StoreProduct }) {
               </select>
             </label>
           ) : (
-            <span className="text-[10px] uppercase tracking-[0.16em] text-ink-500">
-              {t("product.price")}
-            </span>
+            <span className="label">{t("product.price")}</span>
           )}
-          <span className="block text-sm font-semibold text-ink-900">
+          <span className="price block text-lg">
             {selected?.price != null
               ? money(selected.price * quantity, locale)
               : t("product.priceOnRequest")}
           </span>
         </div>
 
-        <div className="inline-flex shrink-0 items-center rounded-full border border-ink-900/12">
+        <div className="inline-flex shrink-0 items-center border border-ink">
           <button
             type="button"
             onClick={() => setQuantity((value) => Math.max(1, value - 1))}
-            className="px-3 py-2 text-ink-700"
+            className="px-3 py-2 text-ink-2"
             aria-label="Decrease quantity"
           >
             −
           </button>
-          <span className="min-w-6 text-center text-sm font-semibold">{quantity}</span>
+          <span className="min-w-6 text-center text-sm font-medium text-ink">{quantity}</span>
           <button
             type="button"
             onClick={() => setQuantity((value) => Math.min(999, value + 1))}
-            className="px-3 py-2 text-ink-700"
+            className="px-3 py-2 text-ink-2"
             aria-label="Increase quantity"
           >
             +
@@ -220,7 +211,7 @@ export function StickyPurchaseBar({ product }: { product: StoreProduct }) {
           type="submit"
           disabled={pending || !selected || outOfStock}
           aria-label={t("product.addToCartFor", { name: product.title })}
-          className="btn btn-primary shrink-0 px-5 py-2.5 text-sm disabled:opacity-60"
+          className="btn btn-primary shrink-0 px-5 py-2.5 text-sm"
         >
           {pending ? t("common.loading") : t("product.addToCart")}
         </button>
@@ -229,7 +220,7 @@ export function StickyPurchaseBar({ product }: { product: StoreProduct }) {
       {state.status !== "idle" && (
         <p
           className={`mt-1 text-center text-xs ${
-            state.status === "success" ? "text-olive-600" : "text-paprika-700"
+            state.status === "success" ? "text-success" : "text-error"
           }`}
           role="status"
         >

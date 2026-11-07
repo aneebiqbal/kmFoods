@@ -2,7 +2,9 @@ import Link from "next/link";
 import { CATEGORY_LABELS, type Category, type Locale } from "@kmfoods/shared";
 import { money, productTitle } from "@/lib/format";
 import type { StoreProduct } from "@/lib/types";
-import { ProductVisual, productArt } from "@/components/product-visual";
+import { ProductVisual } from "@/components/product-visual";
+import { productArt } from "@/lib/product-art";
+import { AddToCartButton } from "@/components/add-to-cart-button";
 
 export function PriceTag({
   price,
@@ -14,18 +16,14 @@ export function PriceTag({
   className?: string;
 }) {
   if (price === null) {
-    return <span className={`text-sm text-ink-500 ${className}`}>—</span>;
+    return <span className={`small ${className}`}>Price on request</span>;
   }
-  return (
-    <span className={`font-semibold text-ink-900 ${className}`}>
-      {money(price, locale)}
-    </span>
-  );
+  return <span className={`price text-lg ${className}`}>{money(price, locale)}</span>;
 }
 
 /**
- * Uses the real Medusa thumbnail when one exists, otherwise the original
- * non-photographic artwork.
+ * Uses the real Medusa thumbnail when one exists, otherwise a verified
+ * photograph or the product set in type.
  */
 export function ProductMedia({
   product,
@@ -40,18 +38,9 @@ export function ProductMedia({
 }) {
   if (product.thumbnail) {
     return (
-      <div
-        className={`relative overflow-hidden bg-bone-100 ${className}`}
-        role="img"
-        aria-label={product.title}
-      >
+      <div className={`photo ${className}`}>
         {/* eslint-disable-next-line @next/next/no-img-element -- Medusa URLs are not in the Next image config */}
-        <img
-          src={product.thumbnail}
-          alt={product.title}
-          loading="lazy"
-          className="h-full w-full object-cover"
-        />
+        <img src={product.thumbnail} alt={product.title} loading="lazy" />
       </div>
     );
   }
@@ -60,7 +49,6 @@ export function ProductMedia({
     <ProductVisual
       title={product.title}
       titleUr={product.titleUr}
-      category={product.category}
       locale={locale}
       variantLabel={variantLabel}
       className={className}
@@ -79,67 +67,51 @@ export function ProductCard({
   const labels = product.category
     ? CATEGORY_LABELS[product.category as Category]
     : null;
-  const art = productArt(product.category);
+  const art = productArt(product.title);
   const unavailable = product.variants.length === 0 || product.minPrice === null;
+  const pack = product.variants.map((variant) => variant.title).join(" / ");
 
   return (
-    <Link href={`/product/${product.handle}`} className="shell group block">
-      <div className="core overflow-hidden">
-        <div className="relative">
-          <ProductMedia
-            product={product}
-            locale={locale}
-            className="aspect-[4/3]"
-            variantLabel={product.variants.map((v) => v.title).join(" / ")}
-          />
-          {unavailable && (
-            <span
-              className="absolute inset-0 flex items-center justify-center text-[10px] font-semibold uppercase tracking-[0.18em]"
-              style={{ background: "rgba(28,19,12,0.55)", color: "#FDFBF7" }}
-            >
-              Price on request
-            </span>
+    <div className="group flex h-full flex-col border border-rule bg-paper">
+      <Link
+        href={`/product/${product.handle}`}
+        className="relative block"
+        aria-label={title}
+      >
+        <ProductMedia
+          product={product}
+          locale={locale}
+          className="aspect-[4/3]"
+          variantLabel={pack}
+        />
+        {unavailable && (
+          <span className="absolute inset-0 flex items-center justify-center bg-ink/55 text-sm text-paper">
+            Price on request
+          </span>
+        )}
+      </Link>
+
+      <div className="flex flex-1 flex-col gap-2 p-3 sm:p-4">
+        {labels && <span className="small">{labels[locale]}</span>}
+        <h3 className="text-xs leading-snug text-ink sm:text-title">
+          <Link href={`/product/${product.handle}`} className="link">
+            {title}
+          </Link>
+        </h3>
+        <p className="small">{pack || "Pack size to be confirmed"}</p>
+
+        <div className="mt-auto flex items-center justify-between gap-3 pt-2">
+          <PriceTag price={product.minPrice} locale={locale} />
+          {art && product.variants.length > 0 && (
+            <AddToCartButton
+              variantId={product.variants[0]?.id ?? ""}
+              disabled={unavailable}
+              label={locale === "ur" ? "ڈالیں" : "Add"}
+              className="w-auto"
+            />
           )}
         </div>
-
-        <div className="p-5">
-          <div className="flex items-center gap-2">
-            {labels && <span className="eyebrow">{labels[locale]}</span>}
-            <span
-              className="ml-auto h-2 w-2 rounded-full"
-              style={{ background: art.from }}
-              aria-hidden="true"
-            />
-          </div>
-
-          <h3 className="mt-3 text-base font-semibold leading-snug text-ink-900 sm:text-lg">
-            {title}
-          </h3>
-          <p className="mt-1 text-xs text-ink-500">
-            {product.variants.length > 0
-              ? product.variants.map((variant) => variant.title).join(" / ")
-              : "Pack size to be confirmed"}
-          </p>
-
-          <div className="mt-4 flex items-center justify-between">
-            <PriceTag price={product.minPrice} locale={locale} />
-            <span className="btn-icon" aria-hidden="true">
-              <svg
-                width="16"
-                height="16"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="1.8"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                <path d="M5 12h14M13 6l6 6-6 6" />
-              </svg>
-            </span>
-          </div>
-        </div>
       </div>
-    </Link>
+    </div>
   );
 }

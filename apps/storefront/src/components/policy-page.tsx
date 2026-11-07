@@ -28,15 +28,11 @@ export function PolicyPage({
     <Section>
       <div className="max-w-3xl">
         <BrandLogo alt="KM Foods" className="h-9 w-auto object-contain" />
-        <h1 className="mt-4 text-4xl font-semibold leading-tight sm:text-5xl">
-          {title}
-        </h1>
-        {intro && (
-          <p className="mt-5 text-lg leading-relaxed text-ink-600">{intro}</p>
-        )}
+        <h1 className="mt-6">{title}</h1>
+        {intro && <p className="lead mt-5">{intro}</p>}
         {draft && (
-          <p className="mt-6 rounded-2xl border border-saffron-400/40 bg-saffron-400/10 px-4 py-3 text-sm text-ink-700">
-            Draft content — pending review and approval by the KM Foods owner.
+          <p className="mt-6 border border-gold bg-paper-2 px-4 py-3 text-sm text-ink">
+            Draft content, pending review and approval by the KM Foods owner.
           </p>
         )}
       </div>
@@ -44,8 +40,8 @@ export function PolicyPage({
       <div className="mt-12 max-w-3xl space-y-8">
         {sections.map((section) => (
           <section key={section.heading}>
-            <h2 className="text-xl font-semibold">{section.heading}</h2>
-            <p className="mt-3 leading-relaxed text-ink-600">{section.body}</p>
+            <h2 className="text-title">{section.heading}</h2>
+            <p className="mt-3 leading-relaxed text-ink-2">{section.body}</p>
           </section>
         ))}
       </div>

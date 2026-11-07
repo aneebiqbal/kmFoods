@@ -20,14 +20,12 @@ export default function Error({
   }, [error]);
 
   return (
-    <section className="mx-auto w-full max-w-2xl px-4 py-24 text-center sm:px-6 lg:px-8">
-      <span className="font-display text-6xl font-semibold text-paprika-700">
-        !
-      </span>
-      <h1 className="mt-4 text-3xl font-semibold text-ink-900">
+    <section className="container section text-center">
+      <p className="numeral text-6xl">!</p>
+      <h1 className="mt-4 text-3xl">
         {translate("en", "common.error" as DictionaryKey)}
       </h1>
-      <p className="mt-3 text-sm text-ink-600">
+      <p className="lead mx-auto mt-3 max-w-md">
         {error.digest
           ? `Reference: ${error.digest}`
           : "The error has been logged. Nothing was charged."}

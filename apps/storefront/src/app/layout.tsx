@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import {
-  Fraunces,
-  Plus_Jakarta_Sans,
+  Piazzolla,
+  Archivo,
   Noto_Nastaliq_Urdu,
   Noto_Naskh_Arabic,
 } from "next/font/google";
@@ -15,23 +15,26 @@ import { Header } from "@/components/chrome";
 import Footer from "@/components/footer";
 import "./globals.css";
 
-const fraunces = Fraunces({
+const piazzolla = Piazzolla({
+  weight: ["400", "500", "600", "700"],
   subsets: ["latin", "latin-ext"],
-  variable: "--font-fraunces",
-  axes: ["opsz"],
+  variable: "--font-piazzolla",
   display: "swap",
 });
-const jakarta = Plus_Jakarta_Sans({
+const archivo = Archivo({
+  weight: ["400", "500", "600"],
   subsets: ["latin", "latin-ext"],
-  variable: "--font-jakarta",
+  variable: "--font-archivo",
   display: "swap",
 });
 const nastaliq = Noto_Nastaliq_Urdu({
+  weight: ["400", "600"],
   subsets: ["arabic"],
   variable: "--font-nastaliq",
   display: "swap",
 });
 const naskh = Noto_Naskh_Arabic({
+  weight: ["400", "500", "600"],
   subsets: ["arabic"],
   variable: "--font-naskh",
   display: "swap",
@@ -68,10 +71,12 @@ export default async function RootLayout({
   }
 
   return (
-    <html lang={locale} dir={locale === "ur" ? "rtl" : "ltr"}>
-      <body
-        className={`${fraunces.variable} ${jakarta.variable} ${nastaliq.variable} ${naskh.variable}`}
-      >
+    <html
+      lang={locale}
+      dir={locale === "ur" ? "rtl" : "ltr"}
+      className={`${piazzolla.variable} ${archivo.variable} ${nastaliq.variable} ${naskh.variable}`}
+    >
+      <body>
         <a href="#main-content" className="skip-link">
           Skip to content
         </a>

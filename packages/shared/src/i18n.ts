@@ -48,7 +48,7 @@ const en = {
   "nav.terms": "Terms",
 
   "home.heroEyebrow": "Premium Pakistani kitchen essentials",
-  "home.heroTitle": "Har Ghar Ka Zaiqa",
+  "home.heroTitle": "Every ingredient has a place.",
   "home.heroSubtitle":
     "Spices, dry fruits, seeds and everyday essentials — sourced with care, delivered across Lahore.",
   "home.heroCta": "Shop the catalogue",
@@ -113,11 +113,10 @@ const en = {
   "home.storySubtitle":
     "Every product is sold in the pack sizes listed in our price list — no substitutions, no hidden weights.",
   "home.checkoutEyebrow": "One conversation",
-  "home.stepsNote":
-    "Opening WhatsApp does not confirm your order. We confirm availability and the delivery charge first.",
+  "home.stepsNote": "Opening WhatsApp does not confirm the order.",
   "home.collectionsTitle": "Curated for the Lahore kitchen",
   "home.collectionsSubtitle":
-    "Grouped by how you actually cook — everyday spices, seeds, dry fruits and the essentials that fill the gaps.",
+    "Grouped by how you cook, from everyday spices to dry fruits.",
   "product.view": "View product",
   "pantry.eyebrow": "Signature module",
   "pantry.title": "The Pantry Shelf",
@@ -242,7 +241,7 @@ export const dictionaries: Record<Locale, Record<DictionaryKey, string>> = {
     "nav.terms": "شرائط",
 
     "home.heroEyebrow": "پاکستانی کچن کی اعلیٰ چیزیں",
-    "home.heroTitle": "ہر گھر کا ذائقہ",
+    "home.heroTitle": "ہر اجزاء کا ایک مقام ہے",
     "home.heroSubtitle":
       "مصالحہ، خشک میوہ جات، بیج اور روزمرہ کی ضروری چیزیں — پورے لاہور میں ڈیلیوری۔",
     "home.heroCta": "کیٹلاگ دیکھیں",
@@ -306,11 +305,10 @@ export const dictionaries: Record<Locale, Record<DictionaryKey, string>> = {
     "home.storySubtitle":
       "ہر مصنوعہ ہماری قیمت کی لسٹ میں درج پیک سائز میں بیچی جاتی ہے — کوئی تبدیلی نہیں، کوئی پوشیدہ وزن نہیں۔",
     "home.checkoutEyebrow": "ایک گفتگو",
-    "home.stepsNote":
-      "واٹس ایپ کھولنا آرڈر کی تصدیق نہیں ہے۔ ہم پہلے دستیابی اور ڈیلیوری چارجز کی تصدیق کرتے ہیں۔",
+    "home.stepsNote": "واٹس ایپ کھولنا آرڈر کی تصدیق نہیں ہے۔",
     "home.collectionsTitle": "لاہور کے باورچی خانے کے لیے",
     "home.collectionsSubtitle":
-      "جس طرح آپ کھانا پکاتے ہیں اسی کے مطابق گروہ — روزمرہ مصالحے، بیج، خشک میوہ جات اور ضروری چیزیں۔",
+      "جس طرح آپ کھانا پکاتے ہیں اسی کے مطابق، روزمرہ مصالحے سے خشک میوہ جات تک۔",
     "product.view": "مصنوعہ دیکھیں",
     "pantry.eyebrow": "نمایاں ماڈیول",
     "pantry.title": "پینٹری شیلف",
