@@ -11,12 +11,15 @@ export function ProductVisual({
   locale = "en",
   className = "",
   variantLabel,
+  compact = false,
 }: {
   title: string;
   titleUr: string | null;
   locale?: Locale;
   className?: string;
   variantLabel?: string | null | undefined;
+  /** A small square for list rows: the initial alone, no overflowing name. */
+  compact?: boolean;
 }) {
   const art = productArt(title);
   const display = locale === "ur" ? titleUr || title : title;
@@ -27,6 +30,20 @@ export function ProductVisual({
       <div className={`photo ${className}`} role="img" aria-label={title}>
         {/* eslint-disable-next-line @next/next/no-img-element -- a verified local asset, not a Next image config source */}
         <img src={art} alt="" loading="lazy" />
+      </div>
+    );
+  }
+
+  if (compact) {
+    return (
+      <div
+        className={`flex items-center justify-center bg-paper-2 ${className}`}
+        role="img"
+        aria-label={title}
+      >
+        <span className="font-display text-2xl leading-none text-ink" aria-hidden="true">
+          {initial}
+        </span>
       </div>
     );
   }

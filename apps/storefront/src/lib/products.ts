@@ -184,6 +184,8 @@ export function toStoreProduct(product: MedusaProduct): StoreProduct {
     title: product.title,
     titleUr:
       typeof product.metadata?.name_ur === "string" ? product.metadata.name_ur : null,
+    srNo:
+      typeof product.metadata?.sr_no === "number" ? product.metadata.sr_no : null,
     description: product.description ?? null,
     category:
       typeof product.metadata?.category === "string" ? product.metadata.category : null,

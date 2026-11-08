@@ -44,6 +44,45 @@ export const CATEGORY_LABELS: Record<Category, { en: string; ur: string }> = {
   "cooking-essentials": { en: "Cooking Essentials", ur: "کھانے کی ضروری چیزیں" },
 };
 
+/**
+ * Short neutral functional descriptions for the category chapters. They state
+ * what the shelf holds, never a sourcing, purity or certification claim.
+ */
+export const CATEGORY_DESCRIPTIONS: Record<Category, { en: string; ur: string }> = {
+  "chilies-peppers": {
+    en: "Dried and ground chilies, packed in 100g and 1kg.",
+    ur: "خشک اور پسی مرچ، 100 گرام اور 1 کلو پیک میں۔",
+  },
+  "whole-spices": {
+    en: "Whole spices for daal, sabzi and biryani.",
+    ur: "دال، سبزی اور بریانی کے لیے ثابت مصالحہ۔",
+  },
+  "ground-spices": {
+    en: "Ground spices and powders, priced per pack.",
+    ur: "پاؤڈر مصالحہ، ہر پیک کی قیمت۔",
+  },
+  seeds: {
+    en: "Seeds for everyday cooking and seasoning.",
+    ur: "روزمرہ کے کھانے اور مسالہ جات کے لیے بیج۔",
+  },
+  "dry-fruits-nuts": {
+    en: "Dry fruits and nuts for the pantry.",
+    ur: "پینٹری کے لیے خشک میوہ جات اور مغزات۔",
+  },
+  "herbs-seasonings": {
+    en: "Herbs and seasonings, packed by weight.",
+    ur: "جڑی بوٹیاں اور مسالہ جات، وزن کے مطابق پیک۔",
+  },
+  sweeteners: {
+    en: "Sweeteners for tea, desserts and cooking.",
+    ur: "چائے، میٹھے اور کھانے کے لیے میٹھائی۔",
+  },
+  "cooking-essentials": {
+    en: "Everyday cooking essentials.",
+    ur: "روزمرہ کھانے کی ضروری چیزیں۔",
+  },
+};
+
 const CATEGORY_RULES: ReadonlyArray<{ category: Category; pattern: RegExp }> = [
   { category: "chilies-peppers", pattern: /chili|chilli|pepper|mirch/i },
   { category: "dry-fruits-nuts", pattern: /almond|badam|kaju|cashew|pistachio|pista|anjeer|fig|munakka|grapes|plum|alu bukhara|coconut|khopra|walnut|akhrot|makhane|roasted gram|gram pulps|chickpea|channa|dates|chuhara|khajoor/i },

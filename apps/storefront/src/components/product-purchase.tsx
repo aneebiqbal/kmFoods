@@ -77,7 +77,7 @@ export function ProductPurchase({ product }: { product: StoreProduct }) {
           <button
             type="button"
             onClick={() => setQuantity((value) => Math.max(1, value - 1))}
-            className="px-4 py-2 text-lg text-ink-2"
+            className="px-4 py-3 text-lg leading-none text-ink-2"
             aria-label="Decrease quantity"
           >
             −
@@ -86,7 +86,7 @@ export function ProductPurchase({ product }: { product: StoreProduct }) {
           <button
             type="button"
             onClick={() => setQuantity((value) => Math.min(999, value + 1))}
-            className="px-4 py-2 text-lg text-ink-2"
+            className="px-4 py-3 text-lg leading-none text-ink-2"
             aria-label="Increase quantity"
           >
             +
@@ -191,7 +191,7 @@ export function StickyPurchaseBar({ product }: { product: StoreProduct }) {
           <button
             type="button"
             onClick={() => setQuantity((value) => Math.max(1, value - 1))}
-            className="px-3 py-2 text-ink-2"
+            className="px-3 py-3 leading-none text-ink-2"
             aria-label="Decrease quantity"
           >
             −
@@ -200,7 +200,7 @@ export function StickyPurchaseBar({ product }: { product: StoreProduct }) {
           <button
             type="button"
             onClick={() => setQuantity((value) => Math.min(999, value + 1))}
-            className="px-3 py-2 text-ink-2"
+            className="px-3 py-3 leading-none text-ink-2"
             aria-label="Increase quantity"
           >
             +

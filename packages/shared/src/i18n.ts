@@ -26,6 +26,7 @@ const en = {
   "common.loading": "Loading...",
   "common.error": "Something went wrong. Please try again.",
   "common.back": "Back",
+  "common.next": "Next",
   "common.retry": "Retry",
   "common.language": "Language",
   "common.currency": "PKR",
@@ -118,6 +119,7 @@ const en = {
   "home.collectionsSubtitle":
     "Grouped by how you cook, from everyday spices to dry fruits.",
   "product.view": "View product",
+  "product.selectPack": "Select pack",
   "pantry.eyebrow": "Signature module",
   "pantry.title": "The Pantry Shelf",
   "pantry.subtitle":
@@ -219,6 +221,7 @@ export const dictionaries: Record<Locale, Record<DictionaryKey, string>> = {
     "common.loading": "لوڈ ہو رہا ہے...",
     "common.error": "کچھ غلط ہو گیا۔ دوبارہ کوشش کریں۔",
     "common.back": "واپس",
+    "common.next": "اگلا",
     "common.retry": "دوبارہ کوشش",
     "common.language": "زبان",
     "common.currency": "روپے",
@@ -310,6 +313,7 @@ export const dictionaries: Record<Locale, Record<DictionaryKey, string>> = {
     "home.collectionsSubtitle":
       "جس طرح آپ کھانا پکاتے ہیں اسی کے مطابق، روزمرہ مصالحے سے خشک میوہ جات تک۔",
     "product.view": "مصنوعہ دیکھیں",
+    "product.selectPack": "پیک چنیں",
     "pantry.eyebrow": "نمایاں ماڈیول",
     "pantry.title": "پینٹری شیلف",
     "pantry.subtitle":

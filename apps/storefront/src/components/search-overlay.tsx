@@ -106,7 +106,7 @@ export function SearchOverlay({
               const term = query.trim();
               if (term) {
                 onClose();
-                router.push(`/shop?q=${encodeURIComponent(term)}`);
+                router.push(`/search?q=${encodeURIComponent(term)}`);
               }
             }}
           >
@@ -132,9 +132,15 @@ export function SearchOverlay({
                 value={query}
                 onChange={(event) => setQuery(event.target.value)}
                 placeholder={t("common.searchPlaceholder")}
-                className="w-full bg-transparent text-lg text-ink outline-none placeholder:text-muted"
+                className="w-full bg-transparent text-2xl text-ink outline-none placeholder:text-muted"
                 aria-label={t("common.search")}
               />
+              <button
+                type="submit"
+                className="btn btn-primary shrink-0 px-5 py-2.5 text-sm"
+              >
+                {t("common.search")}
+              </button>
               <button
                 type="button"
                 onClick={onClose}

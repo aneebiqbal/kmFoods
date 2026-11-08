@@ -10,6 +10,8 @@ export type StoreProduct = {
   handle: string;
   title: string;
   titleUr: string | null;
+  /** Printed catalogue number from the price list, when one exists. */
+  srNo: number | null;
   description: string | null;
   category: string | null;
   thumbnail: string | null;

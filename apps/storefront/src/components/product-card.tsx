@@ -3,8 +3,7 @@ import { CATEGORY_LABELS, type Category, type Locale } from "@kmfoods/shared";
 import { money, productTitle } from "@/lib/format";
 import type { StoreProduct } from "@/lib/types";
 import { ProductVisual } from "@/components/product-visual";
-import { productArt } from "@/lib/product-art";
-import { AddToCartButton } from "@/components/add-to-cart-button";
+import { ProductAction } from "@/components/add-to-cart-button";
 
 export function PriceTag({
   price,
@@ -30,11 +29,13 @@ export function ProductMedia({
   locale,
   className = "",
   variantLabel,
+  compact = false,
 }: {
   product: StoreProduct;
   locale: Locale;
   className?: string;
   variantLabel?: string | null;
+  compact?: boolean;
 }) {
   if (product.thumbnail) {
     return (
@@ -52,10 +53,19 @@ export function ProductMedia({
       locale={locale}
       variantLabel={variantLabel}
       className={className}
+      compact={compact}
     />
   );
 }
 
+function unavailable(product: StoreProduct): boolean {
+  return product.variants.length === 0 || product.minPrice === null;
+}
+
+/**
+ * The standard grid card: visual, category, name, pack and the variant-safe
+ * action. Used for related ingredients and the homepage shelf.
+ */
 export function ProductCard({
   product,
   locale,
@@ -67,8 +77,6 @@ export function ProductCard({
   const labels = product.category
     ? CATEGORY_LABELS[product.category as Category]
     : null;
-  const art = productArt(product.title);
-  const unavailable = product.variants.length === 0 || product.minPrice === null;
   const pack = product.variants.map((variant) => variant.title).join(" / ");
 
   return (
@@ -84,7 +92,7 @@ export function ProductCard({
           className="aspect-[4/3]"
           variantLabel={pack}
         />
-        {unavailable && (
+        {unavailable(product) && (
           <span className="absolute inset-0 flex items-center justify-center bg-ink/55 text-sm text-paper">
             Price on request
           </span>
@@ -102,15 +110,69 @@ export function ProductCard({
 
         <div className="mt-auto flex items-center justify-between gap-3 pt-2">
           <PriceTag price={product.minPrice} locale={locale} />
-          {art && product.variants.length > 0 && (
-            <AddToCartButton
-              variantId={product.variants[0]?.id ?? ""}
-              disabled={unavailable}
-              label={locale === "ur" ? "ڈالیں" : "Add"}
-              className="w-auto"
-            />
+          {product.variants.length > 0 && (
+            <ProductAction product={product} locale={locale} />
           )}
         </div>
+      </div>
+    </div>
+  );
+}
+
+/**
+ * The ledger row: number, ingredient visual, name, category and pack, price and
+ * the variant-safe action. The shop's primary merchandising unit.
+ */
+export function ProductRow({
+  product,
+  locale,
+  index,
+}: {
+  product: StoreProduct;
+  locale: Locale;
+  index: number;
+}) {
+  const title = productTitle(product.title, product.titleUr, locale);
+  const labels = product.category
+    ? CATEGORY_LABELS[product.category as Category]
+    : null;
+  const pack = product.variants.map((variant) => variant.title).join(" / ");
+
+  return (
+    <div className="group flex flex-wrap items-center gap-x-3 gap-y-2 border-b border-rule py-4 sm:gap-x-4">
+      <span className="numeral w-8 shrink-0 text-sm">
+        {String(index + 1).padStart(2, "0")}
+      </span>
+
+      <Link
+        href={`/product/${product.handle}`}
+        className="shrink-0 border border-transparent transition-colors duration-[220ms] hover:border-ink"
+        aria-label={title}
+      >
+        <ProductMedia
+          product={product}
+          locale={locale}
+          className="h-20 w-20 sm:h-24 sm:w-24"
+          compact
+        />
+      </Link>
+
+      <div className="min-w-0 flex-1 basis-40">
+        <h3 className="text-base leading-snug text-ink sm:text-title">
+          <Link href={`/product/${product.handle}`} className="link">
+            {title}
+          </Link>
+        </h3>
+        <p className="small mt-0.5">
+          {labels ? labels[locale] : ""} · {pack || "Pack size to be confirmed"}
+        </p>
+      </div>
+
+      <div className="ms-auto flex shrink-0 items-center gap-2 sm:gap-3">
+        <PriceTag price={product.minPrice} locale={locale} />
+        {product.variants.length > 0 && (
+          <ProductAction product={product} locale={locale} />
+        )}
       </div>
     </div>
   );

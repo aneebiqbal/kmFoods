@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { CATEGORY_LABELS, translate, type Category } from "@kmfoods/shared";
+import { CATEGORY_LABELS, translate, type Category, type Locale } from "@kmfoods/shared";
 import {
   getDefaultRegion,
   getProductByHandle,
@@ -41,6 +41,52 @@ export async function generateMetadata({
   };
 }
 
+/* ── Dossier facts ──────────────────────────────────────────────────────── */
+function DossierFacts({
+  locale,
+  product,
+  categoryLabel,
+}: {
+  locale: Locale;
+  product: {
+    variants: Array<{ id: string; title: string; price: number | null }>;
+    srNo: number | null;
+  };
+  categoryLabel: string;
+}) {
+  const pack = product.variants.map((variant) => variant.title).join(" / ");
+
+  return (
+    <dl className="divide-y divide-rule border-y border-rule">
+      <div className="flex items-baseline justify-between gap-4 py-3">
+        <dt className="small">{translate(locale, "shop.category")}</dt>
+        <dd className="text-sm text-ink">{categoryLabel}</dd>
+      </div>
+      <div className="flex items-baseline justify-between gap-4 py-3">
+        <dt className="small">{translate(locale, "product.packSize")}</dt>
+        <dd className="text-sm text-ink">{pack || "—"}</dd>
+      </div>
+      {product.srNo !== null && (
+        <div className="flex items-baseline justify-between gap-4 py-3">
+          <dt className="small">{translate(locale, "order.reference")}</dt>
+          <dd className="price text-sm">No. {String(product.srNo).padStart(3, "0")}</dd>
+        </div>
+      )}
+      {product.variants.length > 0 && (
+        <div className="flex items-baseline justify-between gap-4 py-3">
+          <dt className="small">{translate(locale, "product.price")}</dt>
+          <dd className="text-sm text-ink">
+            {product.variants
+              .filter((variant) => variant.price !== null)
+              .map((variant) => `${variant.title} ${priceWithCurrency(variant.price ?? 0)}`)
+              .join(", ")}
+          </dd>
+        </div>
+      )}
+    </dl>
+  );
+}
+
 export default async function ProductPage({
   params,
 }: {
@@ -65,6 +111,7 @@ export default async function ProductPage({
   const labels = product.category
     ? CATEGORY_LABELS[product.category as Category]
     : null;
+  const pack = product.variants.map((variant) => variant.title).join(" / ");
 
   const offer = product.minPrice
     ? {
@@ -91,7 +138,8 @@ export default async function ProductPage({
   };
 
   return (
-    <Section>
+    <>
+    <Section className="section--tight">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
@@ -108,10 +156,7 @@ export default async function ProductPage({
         {labels && (
           <>
             <span className="mx-2 text-muted">/</span>
-            <Link
-              href={`/shop?category=${product.category}`}
-              className="link"
-            >
+            <Link href={`/shop?category=${product.category}`} className="link">
               {labels[locale]}
             </Link>
           </>
@@ -120,64 +165,67 @@ export default async function ProductPage({
         <span className="text-ink">{product.title}</span>
       </nav>
 
-      <div className="grid gap-10 lg:grid-cols-2 lg:gap-16">
-        <ProductMedia
-          product={product}
-          locale={locale}
-          className="aspect-square"
-          variantLabel={product.variants.map((variant) => variant.title).join(" / ")}
-        />
+      <div className="grid gap-10 lg:grid-cols-12">
+        <div className="lg:col-span-6">
+          <figure>
+            <ProductMedia
+              product={product}
+              locale={locale}
+              className="aspect-[4/5] lg:aspect-auto lg:h-[520px]"
+              variantLabel={pack}
+            />
+            <figcaption className="small mt-3">{pack}</figcaption>
+          </figure>
+        </div>
 
-        <div className="flex flex-col gap-6">
-          <div>
-            <h1 className="text-4xl leading-tight sm:text-5xl">
-              {locale === "ur" && product.titleUr ? product.titleUr : product.title}
-            </h1>
-            {product.titleUr && locale === "en" && (
-              <p className="lead mt-2">{product.titleUr}</p>
-            )}
-          </div>
-
-          {product.variants.length > 0 && (
-            <div className="flex flex-wrap gap-3">
-              {product.variants.map((variant) => (
-                <div key={variant.id} className="border border-rule bg-paper-2 px-4 py-3">
-                  <p className="small">{variant.title}</p>
-                  <p className="price mt-1 text-lg">
-                    {variant.price === null ? "—" : priceWithCurrency(variant.price)}
-                  </p>
-                </div>
-              ))}
-            </div>
+        <div className="lg:col-span-6">
+          <h1 className="display-section text-4xl sm:text-5xl">
+            {locale === "ur" && product.titleUr ? product.titleUr : product.title}
+          </h1>
+          {product.titleUr && locale === "en" && (
+            <p className="lead mt-2">{product.titleUr}</p>
           )}
 
-          {product.description && (
-            <div>
-              <h2 className="label">{translate(locale, "product.description")}</h2>
-              <p className="mt-3 leading-relaxed text-ink-2">{product.description}</p>
-            </div>
-          )}
-
-          <div className="well p-5">
+          <div className="well mt-8 p-5">
             <ProductPurchase product={product} />
           </div>
+
+          <div className="mt-8">
+            <DossierFacts
+              locale={locale}
+              product={product}
+              categoryLabel={labels ? labels[locale] : "—"}
+            />
+          </div>
+
+          {product.description && (
+            <div className="mt-8">
+              <h2 className="label">{translate(locale, "product.description")}</h2>
+              <p className="mt-3 leading-relaxed text-ink-2">
+                {product.description}
+              </p>
+            </div>
+          )}
         </div>
       </div>
-
-      {related.length > 0 && (
-        <div className="mt-24">
-          <h2 className="text-2xl sm:text-3xl">{translate(locale, "product.related")}</h2>
-          <div className="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
-            {related.map((item) => (
-              <ProductCard key={item.id} product={item} locale={locale} />
-            ))}
-          </div>
-        </div>
-      )}
 
       {/* Keeps the last section clear of the mobile purchase bar. */}
       <div className="h-24 lg:hidden" aria-hidden="true" />
       <StickyPurchaseBar product={product} />
     </Section>
+
+    {related.length > 0 && (
+      <Section className="pt-16">
+        <h2 className="display-section">
+          {translate(locale, "product.related")}
+        </h2>
+        <div className="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+          {related.map((item) => (
+            <ProductCard key={item.id} product={item} locale={locale} />
+          ))}
+        </div>
+      </Section>
+    )}
+    </>
   );
 }
