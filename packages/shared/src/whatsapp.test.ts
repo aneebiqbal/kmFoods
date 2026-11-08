@@ -40,6 +40,19 @@ describe("buildWhatsAppMessage", () => {
     expect(message).toContain("Delivery Area: Lahore");
     expect(message).not.toContain("Delivery Area: Lahore - ");
   });
+
+  it("includes delivery notes when the customer left them", () => {
+    const message = buildWhatsAppMessage({
+      ...order,
+      delivery_notes: "Call on arrival",
+    });
+    expect(message).toContain("Notes: Call on arrival");
+  });
+
+  it("omits the notes line when there are none", () => {
+    const message = buildWhatsAppMessage(order);
+    expect(message).not.toContain("Notes:");
+  });
 });
 
 describe("buildWhatsAppUrl", () => {

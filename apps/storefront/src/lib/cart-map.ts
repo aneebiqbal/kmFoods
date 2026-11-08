@@ -6,10 +6,15 @@ export type MedusaCartItem = {
   unit_price: number;
   title?: string | null;
   variant_id?: string | null;
+  product_id?: string | null;
+  product_handle?: string | null;
   thumbnail?: string | null;
   variant?: {
     title?: string | null;
-    product?: { handle?: string | null } | null;
+    product?: {
+      handle?: string | null;
+      metadata?: Record<string, unknown> | null;
+    } | null;
   } | null;
 };
 
@@ -29,12 +34,17 @@ export function toStoreCart(cart: MedusaCart): StoreCart {
   const items: CartLine[] = (cart.items ?? []).map((item) => ({
     id: item.id,
     variantId: item.variant_id ?? "",
+    productId: item.product_id ?? "",
     title: item.title ?? item.variant?.title ?? "Item",
+    titleUr:
+      typeof item.variant?.product?.metadata?.name_ur === "string"
+        ? (item.variant.product.metadata.name_ur as string)
+        : null,
     variantTitle: item.variant?.title ?? "",
     quantity: item.quantity,
     unitPrice: item.unit_price,
     thumbnail: item.thumbnail ?? null,
-    productHandle: item.variant?.product?.handle ?? "",
+    productHandle: item.product_handle ?? item.variant?.product?.handle ?? "",
   }));
 
   return {

@@ -13,6 +13,17 @@ import { AdminUpdateHandoff } from "./admin/whatsapp-handoffs/validators";
 import { rateLimit } from "../lib/rate-limit";
 
 const CHECKOUT_LIMIT = 10;
+const ORDER_LOOKUP_LIMIT = 60;
+
+async function rateLimitHeaders(
+  res: MedusaResponse,
+  limit: number,
+  result: { remaining: number; resetAt: number }
+) {
+  res.setHeader("X-RateLimit-Limit", String(limit));
+  res.setHeader("X-RateLimit-Remaining", String(result.remaining));
+  res.setHeader("X-RateLimit-Reset", String(Math.ceil(result.resetAt / 1000)));
+}
 
 async function checkoutRateLimit(
   req: MedusaRequest,
@@ -20,13 +31,34 @@ async function checkoutRateLimit(
   next: MedusaNextFunction
 ) {
   const key = req.ip ?? "unknown";
-  const { allowed, remaining, resetAt } = await rateLimit(key, CHECKOUT_LIMIT);
+  const result = await rateLimit(key, CHECKOUT_LIMIT);
+  rateLimitHeaders(res, CHECKOUT_LIMIT, result);
 
-  res.setHeader("X-RateLimit-Limit", String(CHECKOUT_LIMIT));
-  res.setHeader("X-RateLimit-Remaining", String(remaining));
-  res.setHeader("X-RateLimit-Reset", String(Math.ceil(resetAt / 1000)));
+  if (!result.allowed) {
+    res.status(429).json({
+      message: "Too many requests. Please wait a minute and try again.",
+    });
+    return;
+  }
 
-  if (!allowed) {
+  next();
+}
+
+/**
+ * Order references are short and sequential. The lookup exposes no customer
+ * details, but an unthrottled endpoint would still let anyone enumerate every
+ * order. The limit is generous enough for a customer checking their own order.
+ */
+async function orderLookupRateLimit(
+  req: MedusaRequest,
+  res: MedusaResponse,
+  next: MedusaNextFunction
+) {
+  const key = `order-lookup:${req.ip ?? "unknown"}`;
+  const result = await rateLimit(key, ORDER_LOOKUP_LIMIT);
+  rateLimitHeaders(res, ORDER_LOOKUP_LIMIT, result);
+
+  if (!result.allowed) {
     res.status(429).json({
       message: "Too many requests. Please wait a minute and try again.",
     });
@@ -77,6 +109,11 @@ export default defineMiddlewares({
         checkoutRateLimit,
         validateAndTransformBody(PostCreateWhatsAppHandoff),
       ],
+    },
+    {
+      method: ["GET"],
+      matcher: "/store/whatsapp-handoff/:reference",
+      middlewares: [orderLookupRateLimit],
     },
     {
       method: ["POST"],

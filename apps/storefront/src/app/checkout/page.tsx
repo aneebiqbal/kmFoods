@@ -3,7 +3,7 @@ import { getCart } from "@/lib/cart-server";
 import { getDeliveryConfig } from "@/lib/cart-actions";
 import { getLocale } from "@/i18n/locale";
 import { CheckoutForm } from "@/components/checkout-form";
-import { Section } from "@/components/ui";
+import { CatalogueUnavailable, Section } from "@/components/ui";
 
 export const dynamic = "force-dynamic";
 
@@ -14,19 +14,29 @@ export const metadata = {
 export default async function CheckoutPage() {
   const locale = await getLocale();
   const cart = await getCart();
-  const delivery = (await getDeliveryConfig()) ?? {
-    shipping_option_id: null,
-    shipping_option_name: null,
-    fee_pkr: 0,
-    areas: [],
-  };
+  const delivery = await getDeliveryConfig();
+
+  if (!delivery) {
+    return (
+      <Section>
+        <div className="max-w-2xl">
+          <h1>{translate(locale, "checkout.title")}</h1>
+        </div>
+        <div className="mt-12">
+          <CatalogueUnavailable
+            message="We could not reach the store to prepare your delivery details. Please try again in a moment."
+          />
+        </div>
+      </Section>
+    );
+  }
 
   return (
     <Section>
-      <div className="max-w-2xl">
+      <header className="max-w-2xl">
         <h1>{translate(locale, "checkout.title")}</h1>
         <p className="lead mt-4">{translate(locale, "checkout.subtitle")}</p>
-      </div>
+      </header>
 
       <div className="mt-12">
         <CheckoutForm

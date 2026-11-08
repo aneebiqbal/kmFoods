@@ -27,11 +27,12 @@ export function OrderLookup() {
           value={reference}
           onChange={(event) => setReference(event.target.value)}
           placeholder="KM-000123"
+          autoComplete="off"
           className="field"
         />
       </div>
       <button type="submit" className="btn btn-primary px-6 py-3 text-sm">
-        {t("order.status")}
+        {t("order.lookupCta")}
       </button>
     </form>
   );

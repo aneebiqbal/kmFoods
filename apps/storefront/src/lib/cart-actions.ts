@@ -138,6 +138,7 @@ export async function submitCheckoutAction(
   const delivery_city = String(formData.get("delivery_city") ?? "").trim();
   const delivery_area = String(formData.get("delivery_area") ?? "").trim();
   const delivery_address = String(formData.get("delivery_address") ?? "").trim();
+  const delivery_notes = String(formData.get("delivery_notes") ?? "").trim();
   const customer_email = String(formData.get("customer_email") ?? "").trim();
 
   if (!customer_name || !customer_phone || !delivery_city || !delivery_address) {
@@ -168,6 +169,7 @@ export async function submitCheckoutAction(
         delivery_city,
         delivery_area: delivery_area || undefined,
         delivery_address,
+        delivery_notes: delivery_notes || undefined,
         customer_email: customer_email || undefined,
       },
     });
@@ -181,6 +183,16 @@ export async function submitCheckoutAction(
       status: "success",
       reference: result.handoff.reference,
       whatsappUrl: result.whatsapp.url,
+      whatsappConfigured: result.whatsapp.configured,
+      orderNote: result.handoff.message,
+      items: cart.items.map((item) => ({
+        id: item.id,
+        title: item.title,
+        variantTitle: item.variantTitle,
+        quantity: item.quantity,
+        unitPrice: item.unitPrice,
+      })),
+      subtotal: cart.subtotal,
       message: "Order reference created.",
     };
   } catch (error) {

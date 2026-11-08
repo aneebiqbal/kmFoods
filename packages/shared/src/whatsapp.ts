@@ -13,6 +13,7 @@ export type WhatsAppOrder = {
   delivery_city: string;
   delivery_area: string;
   delivery_address: string;
+  delivery_notes?: string;
 };
 
 function money(amount: number): string {
@@ -44,6 +45,7 @@ export function buildWhatsAppMessage(order: WhatsAppOrder): string {
     `Phone: ${order.customer_phone}`,
     `Delivery Area: ${order.delivery_city}${order.delivery_area ? ` - ${order.delivery_area}` : ""}`,
     `Address: ${order.delivery_address}`,
+    ...(order.delivery_notes ? [`Notes: ${order.delivery_notes}`] : []),
     "",
     "Please confirm availability,",
     "delivery charges and final total.",

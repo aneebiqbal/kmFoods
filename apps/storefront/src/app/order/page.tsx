@@ -11,10 +11,11 @@ export default async function OrderPage() {
 
   return (
     <Section>
-      <div className="max-w-2xl">
-        <h1>{translate(locale, "order.title")}</h1>
-        <p className="lead mt-4">{translate(locale, "order.pendingBody")}</p>
-      </div>
+      <header className="max-w-2xl">
+        <h1>{translate(locale, "order.lookupTitle")}</h1>
+        <p className="lead mt-4">{translate(locale, "order.lookupBody")}</p>
+      </header>
+
       <div className="mt-10 max-w-2xl">
         <OrderLookup />
       </div>

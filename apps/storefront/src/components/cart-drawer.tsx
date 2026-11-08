@@ -17,9 +17,10 @@ function DrawerLine({ line, locale }: { line: CartLine; locale: "en" | "ur" }) {
       <div className="h-14 w-14 shrink-0 overflow-hidden border border-rule">
         <ProductVisual
           title={line.title}
-          titleUr={null}
+          titleUr={line.titleUr}
           locale={locale}
           className="h-full w-full"
+          compact
         />
       </div>
       <div className="min-w-0 flex-1">
@@ -29,11 +30,18 @@ function DrawerLine({ line, locale }: { line: CartLine; locale: "en" | "ur" }) {
         >
           {line.title}
         </Link>
+        {line.titleUr && (
+          <p className="small truncate" lang="ur">
+            {line.titleUr}
+          </p>
+        )}
         <p className="small mt-0.5">
           {line.variantTitle} × {line.quantity}
         </p>
       </div>
-      <p className="price text-base">{money(line.unitPrice * line.quantity, locale)}</p>
+      <p className="price shrink-0 text-base">
+        {money(line.unitPrice * line.quantity, locale)}
+      </p>
     </li>
   );
 }
@@ -170,7 +178,9 @@ export function CartDrawer() {
                 )}
 
                 {!loading && (!cart || cart.items.length === 0) && (
-                  <p className="py-12 text-center text-sm text-ink-2">{t("cart.emptyCart")}</p>
+                  <p className="py-12 text-center text-sm text-ink-2">
+                    {t("cart.emptyCart")}
+                  </p>
                 )}
 
                 {!loading && cart && cart.items.length > 0 && (
@@ -186,9 +196,11 @@ export function CartDrawer() {
                 <footer className="border-t border-rule px-5 py-4">
                   <div className="flex items-center justify-between text-sm">
                     <span className="text-ink-2">{t("cart.subtotal")}</span>
-                    <span className="price text-lg">{money(cart.subtotal, locale)}</span>
+                    <span className="price text-lg">
+                      {money(cart.subtotal, locale)}
+                    </span>
                   </div>
-                  <p className="small mt-1">{t("cart.deliveryNote")}</p>
+                  <p className="small mt-1">{t("cart.deliveryToConfirm")}</p>
                   <button
                     type="button"
                     onClick={() => {

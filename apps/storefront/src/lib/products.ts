@@ -110,6 +110,39 @@ export async function getProductByHandle(
   }
 }
 
+/**
+ * Urdu product names keyed by handle, for surfaces that only carry the
+ * product id (the cart). Returns an empty map when the backend is unreachable;
+ * English names remain, so nothing breaks.
+ */
+export async function getUrduNames(
+  productIds: string[]
+): Promise<Record<string, string>> {
+  const unique = [...new Set(productIds)].filter(Boolean);
+  if (unique.length === 0) return {};
+
+  try {
+    const response = await sdk.store.product.list({
+      id: unique,
+      limit: 100,
+      fields: "id,handle,metadata",
+    } as never);
+
+    const names: Record<string, string> = {};
+    for (const product of response.products ?? []) {
+      const urdu =
+        typeof product.metadata?.name_ur === "string"
+          ? product.metadata.name_ur
+          : null;
+      if (urdu && product.handle) names[product.handle] = urdu;
+    }
+    return names;
+  } catch (error) {
+    logFailure("getUrduNames", error);
+    return {};
+  }
+}
+
 export async function getRelatedProducts(
   product: StoreProduct,
   regionId: string,

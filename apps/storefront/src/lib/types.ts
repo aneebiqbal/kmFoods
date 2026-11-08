@@ -29,7 +29,9 @@ export type StoreCategory = {
 export type CartLine = {
   id: string;
   variantId: string;
+  productId: string;
   title: string;
+  titleUr: string | null;
   variantTitle: string;
   quantity: number;
   unitPrice: number;
@@ -91,4 +93,5 @@ export type OrderStatus = {
   }>;
   total: number | null;
   currency_code: string | null;
+  payment_status: string | null;
 };

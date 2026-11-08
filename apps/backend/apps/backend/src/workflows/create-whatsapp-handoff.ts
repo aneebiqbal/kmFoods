@@ -37,6 +37,7 @@ export type CreateWhatsAppHandoffInput = {
   delivery_city: string;
   delivery_area?: string | undefined;
   delivery_address: string;
+  delivery_notes?: string | undefined;
   customer_email?: string | undefined;
 };
 
@@ -242,6 +243,7 @@ const createHandoffRecordStep = createStep(
       delivery_city: data.delivery_city,
       delivery_area: data.delivery_area ?? "",
       delivery_address: data.delivery_address,
+      delivery_notes: data.delivery_notes ?? undefined,
     });
 
     const handoffService =
@@ -257,6 +259,9 @@ const createHandoffRecordStep = createStep(
       delivery_city: data.delivery_city,
       delivery_area: data.delivery_area || null,
       delivery_address: data.delivery_address,
+      metadata: data.delivery_notes
+        ? { delivery_notes: data.delivery_notes }
+        : null,
     });
 
     return new StepResponse(created);
@@ -334,6 +339,7 @@ export const createWhatsappHandoffWorkflow = createWorkflow(
         delivery_city: input.delivery_city,
         delivery_area: input.delivery_area,
         delivery_address: input.delivery_address,
+        delivery_notes: input.delivery_notes,
         customer_email: input.customer_email,
         orderId,
         phone,

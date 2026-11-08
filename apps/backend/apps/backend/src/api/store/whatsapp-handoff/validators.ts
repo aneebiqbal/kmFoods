@@ -8,5 +8,6 @@ export const PostCreateWhatsAppHandoff = z.object({
   delivery_city: z.string().trim().min(1).max(80),
   delivery_area: z.string().trim().max(120).optional(),
   delivery_address: z.string().trim().min(3).max(300),
+  delivery_notes: z.string().trim().max(300).optional(),
   customer_email: z.string().trim().email().max(200).optional(),
 });

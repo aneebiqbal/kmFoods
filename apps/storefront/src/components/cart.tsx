@@ -5,60 +5,11 @@ import { useState, useTransition, type FormEvent } from "react";
 import { useLanguage } from "@/i18n/language-context";
 import { money } from "@/lib/format";
 import type { CartLine } from "@/lib/types";
-import { removeLineItemAction, updateLineItemAction } from "@/lib/cart-actions";
+import { removeLineItemAction } from "@/lib/cart-actions";
 import { IDLE, type ActionState } from "@/lib/action-state";
+import { useStock } from "@/lib/use-stock";
 import { ProductVisual } from "@/components/product-visual";
-
-function QuantityForm({ line }: { line: CartLine }) {
-  const { t } = useLanguage();
-  const [quantity, setQuantity] = useState(line.quantity);
-  const [state, setState] = useState<ActionState>(IDLE);
-  const [pending, startTransition] = useTransition();
-
-  function handleSubmit(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-    const formData = new FormData(event.currentTarget);
-    startTransition(async () => {
-      setState(await updateLineItemAction(IDLE, formData));
-    });
-  }
-
-  return (
-    <form onSubmit={handleSubmit} className="flex items-center gap-2">
-      <input type="hidden" name="lineId" value={line.id} />
-      <input type="hidden" name="quantity" value={quantity} />
-      <div className="inline-flex items-center border border-ink">
-        <button
-          type="button"
-          onClick={() => setQuantity((value) => Math.max(0, value - 1))}
-          className="px-3 py-1.5 text-ink-2"
-          aria-label="Decrease quantity"
-        >
-          −
-        </button>
-        <span className="min-w-7 text-center text-sm font-medium text-ink">{quantity}</span>
-        <button
-          type="button"
-          onClick={() => setQuantity((value) => Math.min(999, value + 1))}
-          className="px-3 py-1.5 text-ink-2"
-          aria-label="Increase quantity"
-        >
-          +
-        </button>
-      </div>
-      <button
-        type="submit"
-        disabled={pending || quantity === line.quantity}
-        className="text-xs font-medium text-accent disabled:opacity-40"
-      >
-        {t("cart.update")}
-      </button>
-      {state.status === "error" && (
-        <span className="text-xs text-error">{state.message}</span>
-      )}
-    </form>
-  );
-}
+import { QuantityStepper } from "@/components/purchase";
 
 function RemoveForm({ line }: { line: CartLine }) {
   const { t } = useLanguage();
@@ -67,6 +18,7 @@ function RemoveForm({ line }: { line: CartLine }) {
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    if (pending) return;
     const formData = new FormData(event.currentTarget);
     startTransition(async () => {
       setState(await removeLineItemAction(IDLE, formData));
@@ -74,55 +26,120 @@ function RemoveForm({ line }: { line: CartLine }) {
   }
 
   return (
-    <form onSubmit={handleSubmit}>
+    <form onSubmit={handleSubmit} className="flex flex-col items-end gap-1">
       <input type="hidden" name="lineId" value={line.id} />
       <button
         type="submit"
         disabled={pending}
-        className="text-xs font-medium text-ink-2 underline underline-offset-2 hover:text-accent"
+        aria-label={t("cart.removeItem", { name: line.title })}
+        className="text-xs font-medium text-ink-2 underline underline-offset-2 transition-colors hover:text-accent disabled:opacity-50"
       >
         {t("cart.remove")}
       </button>
       {state.status === "error" && (
-        <span className="ms-2 text-xs text-error">{state.message}</span>
+        <span className="field-error" role="alert">
+          {state.message}
+        </span>
       )}
     </form>
   );
 }
 
-export function CartLineItems({ lines }: { lines: CartLine[] }) {
-  const { locale } = useLanguage();
+/**
+ * The basket ledger: every ingredient numbered, priced per pack, with the
+ * line total and a thumb-reachable quantity stepper. Totals come from Medusa;
+ * this only lays them out.
+ */
+export function CartLedger({ lines }: { lines: CartLine[] }) {
+  const { t, locale } = useLanguage();
+  const { stock, loading: stockLoading } = useStock(
+    lines.map((line) => line.variantId)
+  );
 
   return (
-    <ul className="divide-y divide-rule border-y border-rule">
-      {lines.map((line) => (
-        <li key={line.id} className="flex flex-wrap items-center gap-4 py-4">
-          <div className="h-20 w-20 shrink-0 overflow-hidden border border-rule">
-            <ProductVisual
-              title={line.title}
-              titleUr={null}
-              locale={locale}
-              className="h-full w-full"
-            />
-          </div>
+    <div className="ledger">
+      <div className="ledger__head" aria-hidden="true">
+        <span className="ledger__num" />
+        <span className="ledger__head-visual" />
+        <span className="small ledger__head-main">
+          <span>{t("cart.item")}</span>
+          <span>{t("cart.lineTotal")}</span>
+        </span>
+        <span className="small ledger__head-actions">{t("cart.quantity")}</span>
+      </div>
 
-          <div className="min-w-40 flex-1">
+      <ul className="ledger__list">
+        {lines.map((line, index) => {
+          const available = stock[line.variantId];
+          return (
+          <li key={line.id} className="ledger-row">
+            <span className="numeral ledger-row__num" aria-hidden="true">
+              {String(index + 1).padStart(2, "0")}
+            </span>
+
             <Link
               href={`/product/${line.productHandle}`}
-              className="text-sm font-medium text-ink link"
+              className="ledger-row__visual"
+              aria-label={line.title}
             >
-              {line.title}
+              <ProductVisual
+                title={line.title}
+                titleUr={line.titleUr}
+                locale={locale}
+                className="h-full w-full"
+                compact
+              />
             </Link>
-            <p className="small mt-0.5">{line.variantTitle}</p>
-            <p className="price mt-1 text-base">{money(line.unitPrice, locale)}</p>
-          </div>
 
-          <div className="flex flex-col items-end gap-2">
-            <QuantityForm line={line} />
-            <RemoveForm line={line} />
-          </div>
-        </li>
-      ))}
-    </ul>
+            <div className="ledger-row__main">
+              <div className="ledger-row__top">
+                <Link
+                  href={`/product/${line.productHandle}`}
+                  className="ledger-row__title link"
+                >
+                  {line.title}
+                </Link>
+                <span className="ledger-row__total">
+                  {money(line.unitPrice * line.quantity, locale)}
+                </span>
+              </div>
+              {line.titleUr && (
+                <p className="ledger-row__ur" lang="ur">
+                  {line.titleUr}
+                </p>
+              )}
+              <p className="ledger-row__meta">
+                {line.variantTitle} · {money(line.unitPrice, locale)}{" "}
+                {t("cart.each")}
+              </p>
+              <p
+                className={`ledger-row__stock${
+                  available === 0 ? " ledger-row__stock--out" : ""
+                }`}
+                role="status"
+              >
+                {stockLoading
+                  ? t("common.loading")
+                  : available === 0
+                    ? t("product.outOfStock")
+                    : available !== undefined && available > 0
+                      ? t("product.inStock")
+                      : t("product.stockUnavailable")}
+              </p>
+            </div>
+
+            <div className="ledger-row__actions">
+              <QuantityStepper
+                lineId={line.id}
+                quantity={line.quantity}
+                name={line.title}
+              />
+              <RemoveForm line={line} />
+            </div>
+          </li>
+          );
+        })}
+      </ul>
+    </div>
   );
 }

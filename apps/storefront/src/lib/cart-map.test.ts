@@ -37,7 +37,52 @@ describe("toStoreCart", () => {
     expect(cart.items[0]?.variantTitle).toBe("100g");
     expect(cart.items[0]?.productHandle).toBe("red-chili-powder");
     expect(cart.items[0]?.unitPrice).toBe(80);
+    expect(cart.items[0]?.titleUr).toBeNull();
     expect(cart.itemCount).toBe(2);
+  });
+
+  it("maps the Urdu product name when the catalogue provides one", () => {
+    const cart = toStoreCart({
+      id: "cart_1",
+      items: [
+        {
+          id: "cali_1",
+          quantity: 1,
+          unit_price: 80,
+          title: "Red Chili Powder",
+          variant_id: "variant_1",
+          variant: {
+            title: "100g",
+            product: {
+              handle: "red-chili-powder",
+              metadata: { name_ur: "سرخ مرچ پاؤڈر" },
+            },
+          },
+        },
+      ],
+    });
+
+    expect(cart.items[0]?.titleUr).toBe("سرخ مرچ پاؤڈر");
+  });
+
+  it("prefers the flattened product handle Medusa returns on the line", () => {
+    const cart = toStoreCart({
+      id: "cart_1",
+      items: [
+        {
+          id: "cali_1",
+          quantity: 1,
+          unit_price: 80,
+          title: "Red Chili Powder",
+          variant_id: "variant_1",
+          product_id: "prod_1",
+          product_handle: "red-chili-powder",
+        },
+      ],
+    });
+
+    expect(cart.items[0]?.productId).toBe("prod_1");
+    expect(cart.items[0]?.productHandle).toBe("red-chili-powder");
   });
 
   it("falls back to sensible defaults when Medusa omits relations", () => {

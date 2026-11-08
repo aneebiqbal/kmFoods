@@ -17,6 +17,8 @@ const CART_FIELDS = [
   "items.title",
   "items.thumbnail",
   "items.variant_id",
+  "items.product_id",
+  "items.product_handle",
   "*items.variant",
   "*items.product",
 ].join(",");

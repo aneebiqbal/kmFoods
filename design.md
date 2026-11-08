@@ -45,3 +45,11 @@ The spacing scale, the type scale, the easings and the durations are the scaffol
 - Category: the ingredient shelves — an editorial chapter template per category.
 - Search: find an ingredient — a strong typographic lookup over the real catalogue.
 - Product: the ingredient dossier — an editorial product record with a real purchase panel.
+
+### Phase 3 · the purchase atelier
+- Cart: the basket ledger — numbered rows, pack and unit price, a 44px stepper, the line total, and an honest delivery state (never a zero fee).
+- Empty cart: "The shelf is ready." — an original line drawing of a shelf of jars, the catalogue action and category chips.
+- Checkout: the delivery folio — ruled sections `01 Delivery details` and `02 Contact`, inline validation, a sticky honest summary.
+- Order note: the conversion moment — the reference set large, a pending pill, the purchased lines, copy-reference, copy-note, the WhatsApp action and three next steps.
+- Order status: the order record — the reference, a status pill, the items, the awaiting payment state, the next action and a support pathway.
+- Signature: the numbered reference, carried from the ledger row through the folio to the note and the record.

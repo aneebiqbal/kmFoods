@@ -25,7 +25,7 @@ export const GET = async (req: MedusaRequest, res: MedusaResponse) => {
   const query = req.scope.resolve(ContainerRegistrationKeys.QUERY);
   const { data: orders } = await query.graph({
     entity: "order",
-    fields: ["id", "display_id", "total", "currency_code", "items.title", "items.quantity", "items.unit_price"],
+    fields: ["id", "display_id", "total", "currency_code", "payment_status", "items.title", "items.quantity", "items.unit_price"],
     filters: { id: handoff.order_id },
   });
   const order = orders[0];
@@ -38,5 +38,6 @@ export const GET = async (req: MedusaRequest, res: MedusaResponse) => {
     items: order?.items ?? [],
     total: order?.total ?? null,
     currency_code: order?.currency_code ?? null,
+    payment_status: order?.payment_status ?? null,
   });
 };
